@@ -35,7 +35,8 @@ function provideDefinition(document, position, token) {
     // if (/\/package\.json$/.test(fileName)) {
 
     const json = document.getText();
-    const defPattern = new RegExp(`(\\s)*(private|on|command|function|setprop|getprop)+(\\s)+${word}`, 'gm')
+    const defPattern = new RegExp(`(((\\s)*(private|on|command|function|setprop|getprop)+(\\s))|((\\s)*(global|local|constant)+(\\s)+.*))${word}`, 'gm')
+    //const defPattern = new RegExp(`(global|local|constant)`, 'gm')
 
     if (defPattern.test(json)) {  //Primero verificamos si el patron esta en el archivo (mas rapido)
         // let destPath = `${workDir}/node_modules/${word.replace(/"/g, '')}/package.json`;
@@ -51,11 +52,6 @@ function provideDefinition(document, position, token) {
         }
     }
 }
-
-
-
-
-
 
 
 
