@@ -1,9 +1,9 @@
 {
-    "name": "livecode",
+    "name": "LivecodeScript",
     "description": "%description%",
     "displayName": "%displayName%",
     "version": "1.0.0",
-    "author": "vscode",
+    "author": "FerrusLogic",
     "publisher": "Ferruslogic",
     "license": "MIT",
     "engines": {
@@ -14,62 +14,72 @@
         "onLanguage:livecodescript"
     ],
     "contributes": {
-        "languages": [{
-            "id": "livecodescript",
-            "aliases": [
-                "Livecodescript",
-                "Liveode",
-                "LCS"
-            ],
-            "extensions": [
-                ".livecodescript"
-            ],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "livecodescript",
-            "scopeName": "source.livecodescript",
-            "path": "./syntaxes/livecodescript.tmLanguage.json",
-            "tokenTypes": {
-                "entity.name.type.instance.jsdoc": "other",
-                "entity.name.function.tagged-template": "other",
-                "meta.import string.quoted": "other",
-                "variable.other.jsdoc": "other"
+        "languages": [
+            {
+                "id": "livecodescript",
+                "aliases": [
+                    "Livecodescript",
+                    "Livecode",
+                    "LCS"
+                ],
+                "extensions": [
+                    ".livecodescript",
+                    ".lc",
+                    ".lch"
+                ],
+                "configuration": "./language-configuration.json"
             }
-        }],
-        "semanticTokenScopes": [{
-            "language": "livecodescript",
-            "scopes": {
-                "property": [
-                    "variable.other.property.livecodescript"
-                ],
-                "property.readonly": [
-                    "variable.other.constant.property.livecodescript"
-                ],
-                "variable": [
-                    "variable.other.readwrite.livecodescript"
-                ],
-                "variable.readonly": [
-                    "variable.other.constant.object.livecodescript"
-                ],
-                "function": [
-                    "entity.name.function.livecodescript"
-                ],
-                "namespace": [
-                    "entity.name.type.module.livecodescript"
-                ],
-                "variable.defaultLibrary": [
-                    "support.variable.livecodescript"
-                ],
-                "function.defaultLibrary": [
-                    "support.function.livecodescript"
-                ]
+        ],
+        "grammars": [
+            {
+                "language": "livecodescript",
+                "scopeName": "source.livecodescript",
+                "path": "./syntaxes/livecodescript.tmLanguage.json",
+                "tokenTypes": {
+                    "entity.name.type.instance.jsdoc": "other",
+                    "entity.name.function.tagged-template": "other",
+                    "meta.import string.quoted": "other",
+                    "variable.other.jsdoc": "other"
+                }
             }
-        }],
-        "snippets": [{
-            "language": "livecodescript",
-            "path": "./snippets/livecode.code-snippets"
-        }]
+        ],
+        "semanticTokenScopes": [
+            {
+                "language": "livecodescript",
+                "scopes": {
+                    "property": [
+                        "variable.other.property.livecodescript"
+                    ],
+                    "property.readonly": [
+                        "variable.other.constant.property.livecodescript"
+                    ],
+                    "variable": [
+                        "variable.other.readwrite.livecodescript"
+                    ],
+                    "variable.readonly": [
+                        "variable.other.constant.object.livecodescript"
+                    ],
+                    "function": [
+                        "entity.name.function.livecodescript"
+                    ],
+                    "namespace": [
+                        "entity.name.type.module.livecodescript"
+                    ],
+                    "variable.defaultLibrary": [
+                        "support.variable.livecodescript"
+                    ],
+                    "function.defaultLibrary": [
+                        "support.function.livecodescript"
+                    ]
+                }
+            }
+        ],
+        "snippets": [
+            {
+                "language": "livecodescript",
+                "path": "./snippets/livecode.code-snippets"
+            }
+        ]
     },
     "repository": {
         "type": "git",
@@ -83,10 +93,7 @@
     },
     "devDependencies": {
         "@types/vscode": "^1.41.0",
-        "vscode-test": "^1.3.0",
-        "typescript": "^4.3.2"
-    },
-    "dependencies": {
-
+        "typescript": "^4.3.2",
+        "vscode-test": "^1.3.0"
     }
 }

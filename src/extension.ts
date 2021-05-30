@@ -1,6 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
-import { DocumentSymbol } from 'vscode';
+//import { DocumentSymbol } from 'vscode';
 
 
 export function activate(context: vscode.ExtensionContext) {
