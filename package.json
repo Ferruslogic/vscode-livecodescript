@@ -1,0 +1,97 @@
+{
+    "name": "livecode",
+    "description": "%description%",
+    "displayName": "%displayName%",
+    "version": "1.0.0",
+    "author": "vscode",
+    "publisher": "Ferruslogic",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.24.0"
+    },
+    "main": "./out/extension.js",
+    "activationEvents": [
+        "onLanguage:livecodescript"
+    ],
+    "contributes": {
+
+
+
+
+
+        "languages": [{
+            "id": "livecodescript",
+            "aliases": [
+                "Livecodescript",
+                "Liveode",
+                "LCS"
+            ],
+            "extensions": [
+                ".livecodescript"
+            ],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "livecodescript",
+            "scopeName": "source.livecodescript",
+            "path": "./syntaxes/livecodescript.tmLanguage.json",
+            "tokenTypes": {
+                "entity.name.type.instance.jsdoc": "other",
+                "entity.name.function.tagged-template": "other",
+                "meta.import string.quoted": "other",
+                "variable.other.jsdoc": "other"
+            }
+        }],
+        "semanticTokenScopes": [{
+            "language": "livecodescript",
+            "scopes": {
+                "property": [
+                    "variable.other.property.livecodescript"
+                ],
+                "property.readonly": [
+                    "variable.other.constant.property.livecodescript"
+                ],
+                "variable": [
+                    "variable.other.readwrite.livecodescript"
+                ],
+                "variable.readonly": [
+                    "variable.other.constant.object.livecodescript"
+                ],
+                "function": [
+                    "entity.name.function.livecodescript"
+                ],
+                "namespace": [
+                    "entity.name.type.module.livecodescript"
+                ],
+                "variable.defaultLibrary": [
+                    "support.variable.livecodescript"
+                ],
+                "function.defaultLibrary": [
+                    "support.function.livecodescript"
+                ]
+            }
+        }],
+        "snippets": [{
+            "language": "livecodescript",
+            "path": "./snippets/livecode.code-snippets"
+        }]
+    },
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/microsoft/vscode.git"
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile"
+    },
+    "dependencies": {
+        "vscode": "^1.1.37"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.41.0",
+        "vscode-test": "^1.3.0"
+    }
+}
