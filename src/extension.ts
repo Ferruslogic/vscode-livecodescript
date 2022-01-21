@@ -4,13 +4,13 @@ import * as vscode from 'vscode';
 
 
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider({scheme: "file", language: "livecodescript"}, new livecodescriptConfigDocumentSymbolProvider()));  
-    context.subscriptions.push(vscode.languages.registerDefinitionProvider({scheme: "file", language: "livecodescript"}, {provideDefinition}));
+    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider({ scheme: "file", language: "livecodescript" }, new livecodescriptConfigDocumentSymbolProvider()));
+    context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: "file", language: "livecodescript" }, { provideDefinition }));
 
-   
- 
 
-    
+
+
+
 }
 
 
@@ -47,7 +47,7 @@ function provideDefinition(document, position, token) {
             var currentline = document.lineAt(i);
 
             if (defPattern.test(currentline.text)) {
-                 return new vscode.Location(vscode.Uri.file(vscode.window.activeTextEditor.document.uri.fsPath),currentline.range.start);
+                return new vscode.Location(vscode.Uri.file(vscode.window.activeTextEditor.document.uri.fsPath), currentline.range.start);
             }
         }
     }
@@ -86,7 +86,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
     }
 
 
-    
+
     public provideDocumentSymbols(
         document: vscode.TextDocument,
         token: vscode.CancellationToken): Promise<vscode.DocumentSymbol[]> {
@@ -357,24 +357,26 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
                 ////variables
                 if (line.text.match(/^\s*global|^\s*local\s+[\w]+/i)) {
-                    let localvar_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[0], symbolkind_variable, line.range, line.range)
 
-                    if (inside_blockcomment) {
+                    for (var index1 in tokens) {
+                        if (index1 == '0' || tokens[index1] == '=' || tokens[String(Number(index1) - 1)] == '=') continue;
+                        let localvar_Symbol = new vscode.DocumentSymbol(tokens[index1], tokens[0], symbolkind_variable, line.range, line.range);
+                        
+                        if (inside_blockcomment) {
 
-                    }
-                    else {
-                        localvar_Symbol.range = new vscode.Range(localvar_Symbol.range.start, line.range.end);
-                        localvar_Symbol.selectionRange = localvar_Symbol.range
-                        if (inside_handler) {
-                            handler_Symbol.children.push(localvar_Symbol)
                         }
                         else {
-                            nodes[nodes.length - 1].push(localvar_Symbol)
+                            localvar_Symbol.range = new vscode.Range(localvar_Symbol.range.start, line.range.end);
+                            localvar_Symbol.selectionRange = localvar_Symbol.range
+                            if (inside_handler) {
+                                handler_Symbol.children.push(localvar_Symbol)
+                            }
+                            else {
+                                nodes[nodes.length - 1].push(localvar_Symbol)
+                            }
+
                         }
-
-
                     }
-
 
                 }
 
