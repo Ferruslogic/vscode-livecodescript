@@ -8,7 +8,7 @@ const enum Setting {
 }
 
 
-export class PerlFormattingProvider implements vscode.DocumentRangeFormattingEditProvider {
+export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFormattingEditProvider {
     public async provideDocumentRangeFormattingEdits(
         document: vscode.TextDocument,
         range: vscode.Range,
@@ -18,9 +18,9 @@ export class PerlFormattingProvider implements vscode.DocumentRangeFormattingEdi
         
         // if perltidy is not defined, then skip the formatting
         let config = vscode.workspace.getConfiguration('livecodescript');
-        let executable = config.get("validate.executablePath", "");
+        let executable = config.get("executablePath", "");
 
-        if (!vscode.workspace.getConfiguration('livecodescript').get("validate.executablePath")) {
+        if (!vscode.workspace.getConfiguration('livecodescript').get("executablePath")) {
             return [];
         }
 
@@ -33,7 +33,7 @@ export class PerlFormattingProvider implements vscode.DocumentRangeFormattingEdi
             }
 
             let config = vscode.workspace.getConfiguration('livecodescript');
-            let executable = config.get("validate.executablePath", "");
+            let executable = config.get("executablePath", "");
  
             let args: string[] = [(path.resolve(__dirname, '../../tools/Formatter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.livecodescript'];
  

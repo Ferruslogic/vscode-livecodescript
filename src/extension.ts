@@ -2,15 +2,15 @@
 import * as vscode from 'vscode';
 //import { DocumentSymbol } from 'vscode';
 
-import PHPValidationProvider from './features/validationProvider';
-import { PerlFormattingProvider } from "./features/format";
+import LivecodescriptValidationProvider from './features/validationProvider';
+import { LivecodescriptFormattingProvider } from "./features/format";
 
 export function activate(context: vscode.ExtensionContext) {
 
-    let validator = new PHPValidationProvider();
-    let formatProvider = new PerlFormattingProvider();
+    let validator = new LivecodescriptValidationProvider();
+    let formatProvider = new LivecodescriptFormattingProvider();
 	validator.activate(context.subscriptions);
-
+    
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider({ scheme: "file", language: "livecodescript" }, new livecodescriptConfigDocumentSymbolProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: "file", language: "livecodescript" }, { provideDefinition }));
     context.subscriptions.push(vscode.languages.registerDocumentRangeFormattingEditProvider({ scheme: "file", language: "livecodescript" }, formatProvider));

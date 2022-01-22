@@ -15,7 +15,7 @@ let localize = nls.loadMessageBundle();
 const enum Setting {
 	Run = 'livecodescript.validate.run',
 	Enable = 'livecodescript.validate.enable',
-	ExecutablePath = 'livecodescript.validate.executablePath',
+	ExecutablePath = 'livecodescript.executablePath',
 }
 
 export class LineDecoder {
@@ -83,7 +83,7 @@ namespace RunTrigger {
 	};
 }
 
-export default class PHPValidationProvider {
+export default class LivecodescriptValidationProvider {
 	
 	private static MatchExpression: RegExp = /(?:(?:Parse|Fatal) error): (.*)(?: in )(.*?)(?: on line )(\d+)/;
 	private static BufferArgs: string[] = [(path.resolve(__dirname, '../../tools/Linter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.livecodescript','-explicitVariables=true'];
@@ -91,7 +91,7 @@ export default class PHPValidationProvider {
 
 	private validationEnabled: boolean;
 	private pauseValidation: boolean;
-	private config: IPhpConfig | undefined;
+	private config: ILivecodescriptConfig | undefined;
 	private loadConfigP: Promise<void>;
 
 	private documentListener: vscode.Disposable | null = null;
@@ -192,7 +192,7 @@ export default class PHPValidationProvider {
 			let decoder = new LineDecoder();
 			let diagnostics: vscode.Diagnostic[] = [];
 			let processLine = (line: string) => {
-				let matches = line.match(PHPValidationProvider.MatchExpression);
+				let matches = line.match(LivecodescriptValidationProvider.MatchExpression);
 				if (matches) {
 					let message = matches[1];
 					let line = parseInt(matches[3]) - 1;
@@ -207,10 +207,10 @@ export default class PHPValidationProvider {
 			let options = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) ? { cwd: vscode.workspace.workspaceFolders[0].uri.fsPath } : undefined;
 			let args: string[];
 			if (this.config!.trigger === RunTrigger.onSave) {
-				args = PHPValidationProvider.FileArgs.slice(0);
+				args = LivecodescriptValidationProvider.FileArgs.slice(0);
 				args.push(textDocument.fileName);
 			} else {
-				args = PHPValidationProvider.BufferArgs;
+				args = LivecodescriptValidationProvider.BufferArgs;
 			}
 			try {
 				let childProcess = cp.spawn(executable, args, options);
@@ -274,13 +274,13 @@ export default class PHPValidationProvider {
 	}
 }
 
-interface IPhpConfig {
+interface ILivecodescriptConfig {
 	readonly executable: string | undefined;
 	readonly executableIsUserDefined: boolean | undefined;
 	readonly trigger: RunTrigger;
 }
 
-async function getConfig(): Promise<IPhpConfig> {
+async function getConfig(): Promise<ILivecodescriptConfig> {
 	const section = vscode.workspace.getConfiguration();
 
 	let executable: string | undefined;
@@ -308,7 +308,7 @@ async function getConfig(): Promise<IPhpConfig> {
 			executable = undefined;
 		}
 	} else if (!executable) {
-		executable = await getPhpPath();
+		executable = await getLivecodescriptPath();
 	}
 
 	const trigger = RunTrigger.from(section.get<string>(Setting.Run, RunTrigger.strings.onSave));
@@ -319,7 +319,7 @@ async function getConfig(): Promise<IPhpConfig> {
 	};
 }
 
-async function getPhpPath(): Promise<string | undefined> {
+async function getLivecodescriptPath(): Promise<string | undefined> {
 	try {
 		return await which('livecodescript');
 	} catch (e) {
