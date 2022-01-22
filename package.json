@@ -1,11 +1,22 @@
 {
     "name": "livecodescript",
-    "description": "%description%",
-    "displayName": "%displayName%",
+    "description": "This extension adds several features to handle livecodescript files",
+    "displayName": "Livecode Language Support",
     "version": "1.0.0",
     "author": "FerrusLogic",
     "publisher": "Ferruslogic",
-    "license": "MIT",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "icon": "images/icon.png",
+    "categories": [
+        "Programming Languages",
+        "Snippets",
+        "Linters",
+        "Formatters"
+    ],
+    "keywords": [
+        "Livecode",
+        "Livecodescript"
+    ],
     "engines": {
         "vscode": "^1.41.0"
     },
@@ -113,7 +124,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/microsoft/vscode.git"
+        "url": "https://github.com/ferruslogic/vscode-livecodescript.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ferruslogic/vscode-livecodescript/issues"
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
