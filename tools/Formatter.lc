@@ -1,0 +1,513 @@
+<?livecode
+
+local sErrorsList
+local sLastLine
+local sTempFile
+
+FormatScript
+
+command FormatScript
+   local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
+   local tIndex
+   repeat for each element theArgument in the commandArguments
+      
+    split theArgument with "="
+      switch theArgument[1]
+         case "-scope"
+            put theArgument[2] into tScope
+            break
+      end switch
+   end repeat
+   
+   read from stdin until empty
+   local tScript
+   put it into tScript
+   
+   create script only stack "TestScript"
+   
+   local tErrors
+   switch tScope
+      case ".source.livecodescript"
+         local tLineOffset = 0
+         
+         -- check for script only
+         /*if word 1 of tScript is "script" then
+            put 1 into tLineOffset
+         end if*/
+         
+         /*if tLineOffset is 1 then
+            delete line 1 of tScript
+         end if*/
+         
+         
+         --set the script of stack "TestScript" to tScript
+         textFormatInitialize
+         write textFormatSelection(tScript) & linefeed to stdout
+     
+      break
+   case ".source.iRev"
+  
+      break
+   case ".source.lcb"
+      
+      break
+end switch
+
+end FormatScript
+
+
+
+
+
+
+private function __GetPreference pPreference, pDefault
+  if pPreference is "editor,tabdepth" then return 3
+   return pDefault
+end __GetPreference
+
+
+
+/////////////////Taken from LC SE//////////////////////////////////////////
+
+local sTextFormatKeywordMap
+
+constant kContinuationIndent = 6
+
+
+
+
+-- Text Formatting Code
+command textFormatInitialize
+   -- permit use in environment with no dependencies
+   local tTabDepth
+   put __GetPreference("editor,tabdepth", 3) into tTabDepth
+   
+   put "0," & tTabDepth into sTextFormatKeywordMap["try"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["switch"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["if"]
+   put -tTabDepth & ",0" into sTextFormatKeywordMap["endif"]
+   put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["elseif"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["repeat"]
+   
+   put "0," & tTabDepth into sTextFormatKeywordMap["on"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["function"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["setprop"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["getprop"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["command"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["private"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["before"]
+   put "0," & tTabDepth into sTextFormatKeywordMap["after"]
+   
+   put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["else"]
+   put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["case"]
+   put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["default"]
+   put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["catch"]
+   put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["finally"]
+   put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["catch"]
+   --put -tTabDepth & comma & tTabDepth into sTextFormatKeywordMap["break"]
+   put 0 & comma & 0 into sTextFormatKeywordMap["break"]
+   
+   put -tTabDepth & ",0" into sTextFormatKeywordMap["end"]
+end textFormatInitialize
+
+
+
+
+
+# Parameters
+#   pText : the text to format
+private function textFormatSelection pText
+   local tResult
+   local tPreviousLine = 0
+   local tTextLines
+   put pText into tTextLines
+   split tTextLines by return
+   
+   get textFormatLine(1, tTextLines, tPreviousLine)
+   put firstWordToEnd(tTextLines[1]) into tTextLines[1]
+   put tTextLines[1] into tResult
+   local tIndex
+   repeat with tIndex = 2 to the number of elements of tTextLines
+      put item 2 of it & firstWordToEnd(tTextLines[tIndex]) into tTextLines[tIndex]
+      get textFormatLine(tIndex, tTextLines, tPreviousLine)
+      
+      if item 1 of it < 0 then
+         repeat -(item 1 of it) times
+            if char 1 of line -1 of tTextLines[tIndex] is space then
+               delete char 1 of tTextLines[tIndex]
+            end if
+         end repeat
+      else if item 1 of it > 0 then
+         repeat item 1 of it times
+            put space before tTextLines[tIndex]
+         end repeat
+      end if
+      
+      put return & tTextLines[tIndex] after tResult
+   end repeat
+   
+   if line -1 of pText = "" then put cr after tResult
+   
+   return tResult
+end textFormatSelection
+
+
+
+
+
+
+
+private function combineContinuedLine pLastLineNumber, @pTextLines
+   local tContinuation
+   put lineStripComments(pTextLines[pLastLineNumber]) into tContinuation
+   
+   local tIndex
+   repeat with tIndex = (pLastLineNumber - 1) down to 1
+      if not lineIsContinued( pTextLines[tIndex]) then
+         exit repeat
+      end if
+      
+      put lineStripComments(pTextLines[tIndex]) before tContinuation
+   end repeat
+   replace "\" with empty in tContinuation
+   return tContinuation
+end combineContinuedLine
+
+
+
+
+
+
+private function textFormatLine pLine, pTextLines, @xPreviousLine
+   local tResult
+   
+   # OK-2009-01-30 : Bug 7051 - Deal better with continuation characters.
+   local tCurrentLineIsContinued
+   local tPreviousLineWasContinued
+   local tPreviousPreviousLineWasContinued
+   
+   # Continuations can only happen with consecutive lines, there can't be comments or empty lines in between,
+   # so we simply use the two previous lines to work out if they are continued or not. If these lines are empty
+   # or are comments, then the result will be that they are not continuations anyway which is correct.
+   put lineIsContinued(pTextLines[pLine - 1]) into tPreviousLineWasContinued
+   put lineIsContinued(pTextLines[pLine - 2]) into tPreviousPreviousLineWasContinued
+   
+   put lineIsContinued(pTextLines[pLine]) into tCurrentLineIsContinued
+   
+   # Get the previous non-empty line
+   if xPreviousLine is 0 and pLine > 1 then
+      put pLine into xPreviousLine
+      repeat while xPreviousLine > 1
+         subtract 1 from xPreviousLine
+         if token 1 of pTextLines[xPreviousLine] is not empty then
+            exit repeat
+         end if 
+      end repeat
+   end if
+   
+   local tPreviousLine
+   local tPreviousLineWasCombined = false
+   if xPreviousLine > 0 then
+      # This is the case where we have reached the end of a continued line. Here, we treat the continued line
+      # as a single entity in order to calculate its indentation properties correctly for the line after it.
+      if lineIsContinued(pTextLines[xPreviousLine - 1]) then
+         put true into tPreviousLineWasCombined
+         put combineContinuedLine(xPreviousLine, pTextLines) into tPreviousLine
+      else
+         put pTextLines[xPreviousLine] into tPreviousLine
+      end if
+      
+      # Get the current indent of the previous line
+      local tPreviousLineIndent
+      put textFormatGetLineIndent(tPreviousLine) into tPreviousLineIndent
+   end if
+   
+   # Get the current indent of the line
+   local tCurrentLineIndent
+   put textFormatGetLineIndent(pTextLines[pLine]) into tCurrentLineIndent
+   
+   # Work out how much indentation the current line should remove from the previous line
+   local tIndentCurrentLineRemoves
+   if tPreviousLineWasContinued then
+      put 0 into tIndentCurrentLineRemoves
+   else
+      put textFormatIndentLineRemoves(tPreviousLine, pTextLines[pLine]) into tIndentCurrentLineRemoves
+   end if
+   
+   # Work out how much indentation the previous line should add to the current line.
+   local tIndentPreviousLineAdds
+   if xPreviousLine is 0 then
+      put 0 into tIndentPreviousLineAdds
+   else if tPreviousLineWasContinued then
+      # we always add the continuation indent because we combined the continued lines
+      put kContinuationIndent into tIndentPreviousLineAdds
+   else
+      put textFormatIndentLineAdds(tPreviousLine) into tIndentPreviousLineAdds
+   end if
+   
+   local tCurrentIndent
+   repeat (the number of chars of tPreviousLineIndent + tIndentCurrentLineRemoves + tIndentPreviousLineAdds)
+      put space after tCurrentIndent
+   end repeat
+   
+   put ((the number of chars of tPreviousLineIndent + tIndentCurrentLineRemoves + tIndentPreviousLineAdds) - the number of chars of tCurrentLineIndent) into tResult
+   
+   -- Finally, calculate the expected next indent.
+   local tNewIndent
+   put tCurrentIndent into tNewIndent
+   
+   local tIndentCurrentLineAdds
+   if tCurrentLineIsContinued and tPreviousLineWasContinued then
+      put 0 into tIndentCurrentLineAdds
+   else if tCurrentLineIsContinued and (not tPreviousLineWasContinued) then
+      put kContinuationIndent into tIndentCurrentLineAdds
+   else if (not tCurrentLineIsContinued) and tPreviousLineWasContinued then
+      put -kContinuationIndent into tIndentCurrentLineAdds
+   else
+      put textFormatIndentLineAdds(pTextLines[pLine]) into tIndentCurrentLineAdds
+   end if
+   
+   if tPreviousLineWasContinued then
+      local tCombinedLine
+      put tPreviousLine && pTextLines[pLine] into tCombinedLine
+      replace "\" with empty in tCombinedLine
+      add textFormatIndentLineAdds(tCombinedLine) to tIndentCurrentLineAdds
+   end if
+   
+   if tIndentCurrentLineAdds < 0 then
+      repeat -tIndentCurrentLineAdds times
+         delete char 1 of tNewIndent
+      end repeat
+   else
+      repeat tIndentCurrentLineAdds times
+         put space after tNewIndent
+      end repeat
+   end if
+   
+   put comma & tNewIndent after tResult
+   
+   if token 1 of pTextLines[pLine] is not empty then
+      put pLine into xPreviousLine
+   end if
+   return tResult
+end textFormatLine
+
+
+
+
+
+private function textFormatIndentLineAdds pLine
+   local tToken
+   put token 1 of pLine into tToken
+   if tToken is "if" then
+      if "else" is among the words of pLine then
+         return 0
+      else if token -1 of pLine is not "then" then
+         return 0
+      else
+         return item 2 of sTextFormatKeywordMap["if"]
+      end if
+      
+   else if tToken is "else" then
+      if token 2 of pLine is "if" then
+         if "else" is among the words of word 3 to -1 of pLine then
+            return 0
+         else if token -1 of pLine is not "then" then
+            return 0
+         else
+            return item 2 of sTextFormatKeywordMap["elseif"]
+         end if
+      else if token 2 of pLine is not empty then
+         return 0
+      else
+         return item 2 of sTextFormatKeywordMap["else"]
+      end if
+      
+   else if token 1 of pLine is empty then
+      return 0
+      
+   else if token 1 of pLine is "then" and "else" is among the tokens of pline then
+      return 0
+      
+      ## Bug 10467 - else in a comment was causing incorrect indentation
+      ## Check for "else" in line without comments
+      --else if token 1 of pLine is not "else" and "else" is among the words of pLine then
+   else if token 1 of pLine is not "else" and "else" is among the words of lineStripComments(pLine) then
+      -- permit use in environment witn no dependencies
+      local tTabDepth
+      put __GetPreference("editor,tabdepth", 3) into tTabDepth
+      return -tTabDepth
+   else if token -1 of pLine is "then" then
+      # Either a weirdly formatted if structure, or the condition of the if contained a line continuation character.
+      # In this case, behave as though pLine is a normal if.
+      return item 2 of sTextFormatKeywordMap["if"]
+   else
+      return item 2 of sTextFormatKeywordMap[tToken]
+   end if
+   return 0
+end textFormatIndentLineAdds
+
+
+
+
+private function textFormatIndentLineRemoves pPreviousLine, pLine
+   local tToken
+   put token 1 of pLine into tToken
+   if tToken is "else" then
+      if token 2 of pLine is "if" then
+         if "then" is among the words of pPreviousLine and token -1 of pPreviousLine is not "then" then
+            return 0
+         else
+            return item 1 of sTextFormatKeywordMap["elseif"]
+         end if
+         
+      else
+      
+         if "then" is among the words of pPreviousLine and token -1 of pPreviousLine is not "then" \
+               and "else" is among the tokens of pPreviousLine and token 1 of pPreviousLine is "if" and token -1 of pLine is "else" then
+            return item 1 of sTextFormatKeywordMap["else"]
+         end if
+         
+         if "then" is among the words of pPreviousLine and token -1 of pPreviousLine is not "then" \
+               and token 1 of pPreviousLine is "if" and token -1 of pLine is "else" then
+            return 0
+         end if
+         
+         if "then" is among the words of pPreviousLine and token -1 of pPreviousLine is not "then" then
+            return 0
+         else
+            return item 1 of sTextFormatKeywordMap["else"]
+         end if
+      end if
+   else if tToken is empty then
+      # Comments and empty lines do not remove any formatting
+      return 0
+   else if tToken is "end" and token 2 of pLine is "switch" and token 1 of pPreviousLine is not "switch" then
+      # Special case for end switch if there is a preceeding "break", "default" or other statement, we need to remove
+      # double the normal indent.
+      return (2 * item 1 of sTextFormatKeywordMap["end"])
+   else if tToken is "case" then
+      # A case statement removes indent from the previous line in all cases except if the
+      # previous line was the beginning of the parent switch structure.
+      if token 1 of pPreviousLine is "switch"  then
+         return 0
+      else
+         return item 1 of sTextFormatKeywordMap["case"]
+      end if
+      # OK-2009-04-28 : Bug 8016 - Special case required for "default" to make switches format correctly.
+   else if tToken is "default" then
+      if token 1 of pPreviousLine is "switch" then
+         return 0
+      else
+         return item 1 of sTextFormatKeywordMap["default"]
+      end if
+   else if tToken is "end" and token 2 of pLine is not among the words of "if switch repeat try" and not lineIsContinued(pLine) then
+      # Handler ends always remove all indentation as they can't be nested
+      # OK-2009-02-16 : Bug 7707 - We can't assume the previous line was correctly formatted or script may be deleted.
+      # Instead we simplify this by simply chopping off whatever indentation it did have.
+      --return min(-(the number of chars of textFormatGetLineIndent(pPreviousLine)), item 1 of sTextFormatKeywordMap[tToken])
+      return item 1 of sTextFormatKeywordMap["end"]
+   else
+      # We can't assume that the previous line was correctly indented
+      # because the script might have been edited from outside this script editor. Therefore
+      # we have to ensure that a line doesnt try to remove more formating than the previous
+      # line actually had. Otherwise non-whitespace chars may be deleted.
+      if the number of chars of textFormatGetLineIndent(pPreviousLine) + the number of chars of textFormatGetLineIndent(pLine) + textFormatIndentLineAdds(pPreviousLine) < abs(item 1 of sTextFormatKeywordMap[tToken]) then
+         return -(the number of chars of textFormatGetLineIndent(pPreviousLine))
+      else
+         return item 1 of sTextFormatKeywordMap[tToken]
+      end if
+   end if
+end textFormatIndentLineRemoves
+
+
+-- all chars after a continuation are treated as a comment
+-- this will work fine until someone uses format with multiple
+-- \"\" but there's not much getting around that
+private function lineIsContinued pLine
+   put lineStripComments(pLine) into pLine
+   split pLine by quote
+   repeat with tIndex = 1 to the number of elements of pLine step 2
+      if pLine[tIndex] contains "\" then
+         return true
+      end if
+   end repeat
+   return false
+end lineIsContinued
+
+
+# Description
+## Returns a line stripped of comments at the end of the line
+## and inline comments ( /* ... */ )
+private function lineStripComments pLine
+   local tLine, tInComment
+   split pLine by quote
+   
+   put false into tInComment
+   repeat with tIndex = 1 to the number of elements of pLine step 2
+      put __StripComment(pLine[tIndex], tInComment) after tLine
+      if tInComment then exit repeat
+      if tIndex is not the number of elements of pLine then
+         put quote & pLine[tIndex+1] & quote after tLine
+      end if
+   end repeat
+   
+   return tLine
+end lineStripComments
+
+
+
+private function __StripComment pLine, @xInComment
+   local tOffset
+   repeat for each word tComment in "# -- //"
+      put offset(tComment, pLine) into tOffset
+      if tOffset is not 0 then
+         delete char tOffset to -1 of pLine
+         put true into xInComment
+      end if
+   end repeat
+
+   put __StripBlockComment(pLine, xInComment) into pLine
+   
+   return pLine
+end __StripComment
+
+private function __StripBlockComment pline, @xInComment
+   local tOffset, tOffsetEnd
+   put offset("/*", pLine) into tOffset
+   if tOffset is not 0 then
+      put offset("*/", pLine, tOffset) into tOffsetEnd
+      if tOffsetEnd is not 0 then
+         delete char tOffset to tOffset + tOffsetEnd of pLine
+         put __StripBlockComment(pLine, xInComment) into pLine
+      else
+         delete char tOffset to -1 of pLine
+         put true into xInComment
+      end if
+   end if
+
+   return pLine
+end __StripBlockComment
+
+
+private function textFormatGetLineIndent pLine
+   local tResult
+   repeat for each char tChar in pLine
+      if tChar is space then
+         put space after tResult
+      else
+         return tResult
+      end if
+   end repeat
+   return tResult
+end textFormatGetLineIndent
+
+# Returns
+#   The chunk of pLine from the beginning of the first word to the end.
+private function firstWordToEnd pLine
+   local tOffset
+   put offset(word 1 of pLine, pLine) into tOffset
+   return char tOffset to -1 of pLine
+end firstWordToEnd
+
+

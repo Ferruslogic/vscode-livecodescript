@@ -8,7 +8,6 @@ Lint
 
 command Lint
   local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
-  put "aaaaaaaaaa" & linefeed & cr after url("file:c:/tmp/lint.log")
   local tIndex
   repeat for each element theArgument in the commandArguments
    

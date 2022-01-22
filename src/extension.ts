@@ -3,29 +3,25 @@ import * as vscode from 'vscode';
 //import { DocumentSymbol } from 'vscode';
 
 import PHPValidationProvider from './features/validationProvider';
+import { PerlFormattingProvider } from "./features/format";
 
 export function activate(context: vscode.ExtensionContext) {
 
     let validator = new PHPValidationProvider();
+    let formatProvider = new PerlFormattingProvider();
 	validator.activate(context.subscriptions);
 
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider({ scheme: "file", language: "livecodescript" }, new livecodescriptConfigDocumentSymbolProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: "file", language: "livecodescript" }, { provideDefinition }));
+    context.subscriptions.push(vscode.languages.registerDocumentRangeFormattingEditProvider({ scheme: "file", language: "livecodescript" }, formatProvider));
+
 }
 
 
 
 
+    
 
-
-vscode.languages.registerDocumentFormattingEditProvider('livecodescript', {
-    provideDocumentFormattingEdits(document: vscode.TextDocument): vscode.TextEdit[] {
-        const firstLine = document.lineAt(0);
-        if (firstLine.text !== '42') {
-            return [vscode.TextEdit.insert(firstLine.range.start, '42\n')];
-        }
-    }
-});
 
 
 
