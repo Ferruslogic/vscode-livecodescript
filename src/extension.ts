@@ -2,16 +2,26 @@
 import * as vscode from 'vscode';
 //import { DocumentSymbol } from 'vscode';
 
+import LivecodescriptValidationProvider from './features/validationProvider';
+import { LivecodescriptFormattingProvider } from "./features/format";
 
 export function activate(context: vscode.ExtensionContext) {
+
+    let validator = new LivecodescriptValidationProvider();
+    let formatProvider = new LivecodescriptFormattingProvider();
+	validator.activate(context.subscriptions);
+    
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider({ scheme: "file", language: "livecodescript" }, new livecodescriptConfigDocumentSymbolProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: "file", language: "livecodescript" }, { provideDefinition }));
-
-
-
-
+    context.subscriptions.push(vscode.languages.registerDocumentRangeFormattingEditProvider({ scheme: "file", language: "livecodescript" }, formatProvider));
 
 }
+
+
+
+
+    
+
 
 
 
@@ -19,38 +29,28 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 function provideDefinition(document, position, token) {
-    const fileName = document.fileName;
-    // const workDir = path.dirname(fileName);
-    const word = document.getText(document.getWordRangeAtPosition(position));
-    //const line = document.lineAt(position);
-    //const projectPath = util.getProjectPath(document);
-
-    // console.log ('= = = = = enter provideddefinition method = = = =');
-    ///  console.log ('filename: '+ filename); // full path of current file
-    //  console.log ('workdir: '+ workdir); // directory of the current file
-    // console.log ('word: '+ word); // the word of the current cursor
-    // console.log ('line: ' +  line.text ）; // current cursor line
-    // console.log ('projectpath: '+ projectpath); // current project directory
-    //Processing only package.json file
-    // if (/\/package\.json$/.test(fileName)) {
-
-    const json = document.getText();
-    const defPattern = new RegExp(`(((\\s)*(private|on|command|function|setprop|getprop)+(\\s))|((\\s)*(global|local|constant)+(\\s)+.*))${word}`, 'gm')
-    //const defPattern = new RegExp(`(global|local|constant)`, 'gm')
-
-    if (defPattern.test(json)) {  //Primero verificamos si el patron esta en el archivo (mas rapido)
-        // let destPath = `${workDir}/node_modules/${word.replace(/"/g, '')}/package.json`;
-        // if (fs.existsSync(destPath)) {
-        // new  vscode.Position (0, 0) means to jump to the first line and first column of a file
-
-        for (var i = 0; i < document.lineCount; i++) {
-            var currentline = document.lineAt(i);
-
-            if (defPattern.test(currentline.text)) {
-                return new vscode.Location(vscode.Uri.file(vscode.window.activeTextEditor.document.uri.fsPath), currentline.range.start);
+        const fileName = document.fileName;
+        const word = document.getText(document.getWordRangeAtPosition(position));
+     
+        const json = document.getText();
+        const defPattern = new RegExp(`(((\\s)*(private|on|command|function|setprop|getprop)+(\\s))|((\\s)*(global|local|constant)+(\\s)+.*))${word}`, 'gm')
+        //const defPattern = new RegExp(`(global|local|constant)`, 'gm')
+    
+        if (defPattern.test(json)) {  //Primero verificamos si el patron esta en el archivo (mas rapido)
+            for (var i = 0; i < document.lineCount; i++) {
+                var currentline = document.lineAt(i);
+                
+                if (defPattern.test(currentline.text)) {
+                    return new vscode.Location(vscode.Uri.file(document.uri.fsPath), currentline.range.start);
+                }
             }
         }
-    }
+
+
+
+
+
+
 }
 
 
@@ -361,7 +361,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                     for (var index1 in tokens) {
                         if (index1 == '0' || tokens[index1] == '=' || tokens[String(Number(index1) - 1)] == '=') continue;
                         let localvar_Symbol = new vscode.DocumentSymbol(tokens[index1], tokens[0], symbolkind_variable, line.range, line.range);
-                        
+
                         if (inside_blockcomment) {
 
                         }
