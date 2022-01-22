@@ -2,7 +2,7 @@
     "name": "livecodescript",
     "description": "This extension adds several features to handle livecodescript files",
     "displayName": "Livecode Language Support",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "author": "FerrusLogic",
     "publisher": "Ferruslogic",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -130,6 +130,7 @@
         "url": "https://github.com/ferruslogic/vscode-livecodescript/issues"
     },
     "scripts": {
+        "deploy": "vsce publish --yarn",
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
@@ -144,6 +145,7 @@
         "@types/vscode": "^1.61.0",
         "@types/which": "^2.0.0",
         "typescript": "^4.3.2",
+        "vsce": "^2.6.3",
         "vscode-test": "^1.3.0"
     }
 }
