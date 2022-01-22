@@ -134,7 +134,7 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "pretest": "npm update|npm run compile"
+        "pretest": "npm run compile"
     },
     "dependencies": {
         "vscode-nls": "^4.0.0",
