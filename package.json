@@ -2,7 +2,7 @@
     "name": "livecodescript",
     "description": "This extension adds several features to handle livecodescript files",
     "displayName": "Livecode Language Support",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "author": "FerrusLogic",
     "publisher": "Ferruslogic",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -29,19 +29,14 @@
             "title": "Livecodescript",
             "type": "object",
             "properties": {
-                "livecodescript.suggest.basic": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "test1"
-                },
                 "livecodescript.validate.enable": {
                     "type": "boolean",
                     "default": true,
-                    "description": "test2"
+                    "description": "Enable code validation"
                 },
-                "livecodescript.validate.executablePath": {
+                "livecodescript.LivecodeServerExecutablePath": {
                     "type": "string",
-                    "default": "C:\\lc-server\\livecode-server.exe",
+                    "default": "",
                     "description": "Executable Path"
                 },
                 "livecodescript.validate.run": {

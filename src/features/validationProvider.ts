@@ -15,7 +15,7 @@ let localize = nls.loadMessageBundle();
 const enum Setting {
 	Run = 'livecodescript.validate.run',
 	Enable = 'livecodescript.validate.enable',
-	ExecutablePath = 'livecodescript.executablePath',
+	LivecodeServerExecutablePath = 'livecodescript.LivecodeServerExecutablePath',
 }
 
 export class LineDecoder {
@@ -177,7 +177,7 @@ export default class LivecodescriptValidationProvider {
 		return new Promise<void>(resolve => {
 			const executable = this.config!.executable;
 			if (!executable) {
-				this.showErrorMessage(localize('noLivecode', 'Cannot validate since a Livecode installation could not be found. Use the setting \'livecodescript.validate.executablePath\' to configure the Livecode executable.'));
+				this.showErrorMessage(localize('noLivecode', 'Cannot validate since a Livecode installation could not be found. Use the setting \'livecodescript.LivecodeServerExecutablePath\' to configure the Livecode executable.'));
 				this.pauseValidation = true;
 				resolve();
 				return;
@@ -252,9 +252,9 @@ export default class LivecodescriptValidationProvider {
 		let message: string | null = null;
 		if (error.code === 'ENOENT') {
 			if (this.config!.executable) {
-				message = localize('wrongExecutable', 'Cannot validate since {0} is not a valid Livecode executable. Use the setting \'livecodescript.validate.executablePath\' to configure the Livecode executable.', executable);
+				message = localize('wrongExecutable', 'Cannot validate since {0} is not a valid Livecode executable. Use the setting \'livecodescript.LivecodeServerExecutablePath\' to configure the Livecode executable.', executable);
 			} else {
-				message = localize('noExecutable', 'Cannot validate since no Livecode executable is set. Use the setting \'livecodescript.validate.executablePath\' to configure the Livecode executable.');
+				message = localize('noExecutable', 'Cannot validate since no Livecode executable is set. Use the setting \'livecodescript.LivecodeServerExecutablePath\' to configure the Livecode executable.');
 			}
 		} else {
 			message = error.message ? error.message : localize('unknownReason', 'Failed to run Livecode using path: {0}. Reason is unknown.', executable);
@@ -269,7 +269,7 @@ export default class LivecodescriptValidationProvider {
 	private async showErrorMessage(message: string): Promise<void> {
 		const openSettings = localize('goToSetting', 'Open Settings');
 		if (await vscode.window.showInformationMessage(message, openSettings) === openSettings) {
-			vscode.commands.executeCommand('workbench.action.openSettings', Setting.ExecutablePath);
+			vscode.commands.executeCommand('workbench.action.openSettings', Setting.LivecodeServerExecutablePath);
 		}
 	}
 }
@@ -285,7 +285,7 @@ async function getConfig(): Promise<ILivecodescriptConfig> {
 
 	let executable: string | undefined;
 	let executableIsUserDefined: boolean | undefined;
-	const inspect = section.inspect<string>(Setting.ExecutablePath);
+	const inspect = section.inspect<string>(Setting.LivecodeServerExecutablePath);
 	if (inspect && inspect.workspaceValue) {
 		executable = inspect.workspaceValue;
 		executableIsUserDefined = false;

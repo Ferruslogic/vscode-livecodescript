@@ -4,7 +4,7 @@ import * as path from 'path';
 
 
 const enum Setting {
-	ExecutablePath = 'livecodescript.validate.executablePath',
+	LivecodeServerExecutablePath = 'livecodescript.validate.LivecodeServerExecutablePath',
 }
 
 
@@ -18,9 +18,9 @@ export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFor
         
         // if perltidy is not defined, then skip the formatting
         let config = vscode.workspace.getConfiguration('livecodescript');
-        let executable = config.get("executablePath", "");
+        let executable = config.get("LivecodeServerExecutablePath", "");
 
-        if (!vscode.workspace.getConfiguration('livecodescript').get("executablePath")) {
+        if (!vscode.workspace.getConfiguration('livecodescript').get("LivecodeServerExecutablePath")) {
             return [];
         }
 
@@ -33,7 +33,7 @@ export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFor
             }
 
             let config = vscode.workspace.getConfiguration('livecodescript');
-            let executable = config.get("executablePath", "");
+            let executable = config.get("LivecodeServerExecutablePath", "");
  
             let args: string[] = [(path.resolve(__dirname, '../../tools/Formatter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.livecodescript'];
  
