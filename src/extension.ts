@@ -1,6 +1,8 @@
 'use strict';
 import * as vscode from 'vscode';
 //import { DocumentSymbol } from 'vscode';
+import * as path from 'path';
+import * as nls from 'vscode-nls';
 
 import LivecodescriptValidationProvider from './features/validationProvider';
 import { LivecodescriptFormattingProvider } from "./features/format";
@@ -9,8 +11,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     let validator = new LivecodescriptValidationProvider();
     let formatProvider = new LivecodescriptFormattingProvider();
-	validator.activate(context.subscriptions);
-    
+    validator.activate(context.subscriptions);
+
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider({ scheme: "file", language: "livecodescript" }, new livecodescriptConfigDocumentSymbolProvider()));
     context.subscriptions.push(vscode.languages.registerDefinitionProvider({ scheme: "file", language: "livecodescript" }, { provideDefinition }));
     context.subscriptions.push(vscode.languages.registerDocumentRangeFormattingEditProvider({ scheme: "file", language: "livecodescript" }, formatProvider));
@@ -20,7 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 
-    
 
 
 
@@ -28,26 +29,48 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 
-function provideDefinition(document, position, token) {
-        const fileName = document.fileName;
-        const word = document.getText(document.getWordRangeAtPosition(position));
-     
+
+function provideDefinition(origDocument, position, token) {
+    const word = origDocument.getText(origDocument.getWordRangeAtPosition(position));
+    const defPattern = new RegExp(`(((\\s)*(private|on|command|function|setprop|getprop)+(\\s))|((\\s)*(global|local|constant)+(\\s)+.*))${word}(?:\\s|$)`, 'gim')
+    const localPattern = new RegExp(`(((\\s)*(private)+(\\s))|((\\s)*(local)+(\\s)+.*))${word}(?:\\s|$)`, 'gim')
+
+
+
+
+
+
+    const json = origDocument.getText();
+    if (defPattern.test(json)) {  //Primero verificamos si el patron esta en el archivo (mas rapido)
+        for (var i = 0; i < origDocument.lineCount; i++) {
+            currentline = origDocument.lineAt(i);
+            if (defPattern.test(currentline.text)) {
+                return new vscode.Location(vscode.Uri.file(origDocument.uri.fsPath), currentline.range.start);
+            }
+        }
+    }
+
+
+
+    for (let document of vscode.workspace.textDocuments) {
+        //  if (origDocument==document) continue;
         const json = document.getText();
-        const defPattern = new RegExp(`(((\\s)*(private|on|command|function|setprop|getprop)+(\\s))|((\\s)*(global|local|constant)+(\\s)+.*))${word}`, 'gm')
-        //const defPattern = new RegExp(`(global|local|constant)`, 'gm')
-    
+
         if (defPattern.test(json)) {  //Primero verificamos si el patron esta en el archivo (mas rapido)
             for (var i = 0; i < document.lineCount; i++) {
                 var currentline = document.lineAt(i);
-                
+
                 if (defPattern.test(currentline.text)) {
-                    return new vscode.Location(vscode.Uri.file(document.uri.fsPath), currentline.range.start);
+                    if (localPattern.test(currentline.text) && origDocument !== document) {
+                        return;
+                    } else {
+                        return new vscode.Location(vscode.Uri.file(document.uri.fsPath), currentline.range.start);
+                    }
                 }
             }
         }
 
-
-
+    }
 
 
 
