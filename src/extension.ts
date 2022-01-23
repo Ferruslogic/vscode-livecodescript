@@ -138,11 +138,14 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
             let symbolkind_comment = vscode.SymbolKind.String
             let symbolkind_variable = vscode.SymbolKind.Variable
 
+            let re = /([=\"])/gi;
+            var lineText;
 
             for (var i = 0; i < document.lineCount; i++) {
                 var line = document.lineAt(i);
-
-                let tokensDirty = line.text.split(/\s/)
+                lineText = line.text.replace(re," $1 ");
+               
+                let tokensDirty = lineText.split(/[\s]+/)
 
 
                 var tokens = tokensDirty.filter(function (el) {
@@ -153,7 +156,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
 
                 ////Event (On)
-                if (line.text.match(/^on\s+[\w]+/i)) {
+                if (lineText.match(/^on\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_event, line.range, line.range)
                     handler_Symbol.kind = symbolkind_event
                     handler_Symbol.name = tokens[1]
@@ -164,7 +167,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                     inside_handler = true
 
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
 
                     if (inside_handler) {
 
@@ -178,10 +181,9 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 }
 
 
-
                 ////Event (before or afer)
 
-                if (line.text.match(/^before|^after\s+[\w]+/i)) {
+                if (lineText.match(/^before|^after\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_event, line.range, line.range)
                     handler_Symbol.kind = symbolkind_cmd
                     handler_Symbol.name = tokens[1]
@@ -192,7 +194,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                     inside_handler = true
 
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
 
                     if (inside_handler) {
 
@@ -205,23 +207,14 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                     }
                 }
 
-
-
-
-
-
-
-
-
-
                 //////Command
-                if (line.text.match(/^command\s+[\w]+/i)) {
+                if (lineText.match(/^command\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_cmd, line.range, line.range)
 
                     inside_handler = true
 
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
 
                     if (inside_handler) {
 
@@ -236,7 +229,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
 
                 //////Private Command
-                if (line.text.match(/^(private)\s+command\s+[\w]+/i)) {
+                if (lineText.match(/^(private)\s+command\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[2], tokens[3], symbolkind_cmd, line.range, line.range)
 
 
@@ -244,7 +237,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                     inside_handler = true
 
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
 
                     if (inside_handler) {
 
@@ -258,14 +251,9 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 }
 
 
-
-
-
-
-
                 ////Function
 
-                if (line.text.match(/^function\s+[\w]+/i)) {
+                if (lineText.match(/^function\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_ftn, line.range, line.range)
                     handler_Symbol.kind = symbolkind_ftn
 
@@ -277,7 +265,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                     inside_handler = true
 
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
 
                     if (inside_handler) {
 
@@ -292,12 +280,12 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
 
                 //////Private function
-                if (line.text.match(/^(private)\s+function\s+[\w]+/i)) {
+                if (lineText.match(/^(private)\s+function\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[2], tokens[3], symbolkind_ftn, line.range, line.range)
                     inside_handler = true
 
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
 
                     if (inside_handler) {
 
@@ -311,17 +299,15 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 }
 
 
-
-
                 ////getprop
 
-                if (line.text.match(/^getprop\s+[\w]+/i)) {
+                if (lineText.match(/^getprop\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_getprop, line.range, line.range)
 
                     inside_handler = true
 
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
 
                     if (inside_handler) {
 
@@ -335,16 +321,13 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 }
 
 
-
-
-
                 ////setprop
-                if (line.text.match(/^setprop\s+[\w]+/i)) {
+                if (lineText.match(/^setprop\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_setprop, line.range, line.range)
 
                     inside_handler = true
                 }
-                else if (line.text.match(/^end\s/)) {
+                else if (lineText.match(/^end\s/)) {
                     if (inside_handler) {
                         handler_Symbol.range = new vscode.Range(handler_Symbol.range.start, line.range.end);
                         handler_Symbol.selectionRange = handler_Symbol.range
@@ -354,16 +337,12 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 }
 
 
-
-
-
-
                 ////block comment
-                if (line.text.match(/\/\*/i)) {
+                if (lineText.match(/\/\*/i)) {
                     blockcomment_Symbol = new vscode.DocumentSymbol("comment", tokens[1], symbolkind_comment, line.range, line.range)
                     inside_blockcomment = true
                 }
-                if (line.text.match(/\*\//i) && inside_blockcomment) {
+                if (lineText.match(/\*\//i) && inside_blockcomment) {
                     if (inside_blockcomment) {
                         blockcomment_Symbol.range = new vscode.Range(blockcomment_Symbol.range.start, line.range.end);
                         blockcomment_Symbol.selectionRange = blockcomment_Symbol.range
@@ -379,13 +358,23 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
 
                 ////variables
-                if (line.text.match(/^\s*global|^\s*local\s+[\w]+/i)) {
+                if (lineText.match(/^\s*global|^\s*local\s+[\w]+/i)) {
+                    let tInQuotes: Boolean = false;
 
                     for (var index1 in tokens) {
-                        if (index1 == '0' || tokens[index1] == '=' || tokens[String(Number(index1) - 1)] == '=') continue;
+                        if (tokens[index1] == "\"") 
+                        tInQuotes = !tInQuotes;
+                        if (tInQuotes == true || index1 == '0' || tokens[index1] == '=' ||tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
+
+
+
+
+
+
                         let localvar_Symbol = new vscode.DocumentSymbol(tokens[index1], tokens[0], symbolkind_variable, line.range, line.range);
 
                         if (inside_blockcomment) {
+
 
                         }
                         else {
@@ -407,7 +396,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
 
 
-                /*  if (line.text.match(/^\s*global|^\s*local\s+[\w]+/i)) {
+                /*  if (lineText.match(/^\s*global|^\s*local\s+[\w]+/i)) {
                      let variable_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_variable, line.range, line.range)
   
                       if (inside_handler) {
