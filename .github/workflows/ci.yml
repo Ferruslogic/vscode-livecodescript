@@ -7,7 +7,7 @@ on:
       - "develop"
     tags:
       - "v*"
-      -"Release-*"
+      - "Release-*"
 
 jobs:
   build:
