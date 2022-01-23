@@ -12,4 +12,6 @@ Learn more about the rich features of the Python extension:
 - Format your code
 - Syntax highlighting
 - Go to definition
+- Outline
+- Breadcrumbs
 
