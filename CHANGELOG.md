@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [Unreleased]
+
+
+### Fixed
+
+- Fixed Typo in the readme
+- Fixed LivecodeServerExecutablePath no applying correctly
+
+### Added
+
+- Basic documentation on Readme.md
+
+### Removed
+
+- Removed unused configuration entry
+
+
 ## [1.0.4] - 2022-01-22
 
 ### Added

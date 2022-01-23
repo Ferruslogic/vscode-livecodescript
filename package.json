@@ -29,19 +29,14 @@
             "title": "Livecodescript",
             "type": "object",
             "properties": {
-                "livecodescript.suggest.basic": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "test1"
-                },
                 "livecodescript.validate.enable": {
                     "type": "boolean",
                     "default": true,
-                    "description": "test2"
+                    "description": "Enable code validation"
                 },
-                "livecodescript.validate.executablePath": {
+                "livecodescript.LivecodeServerExecutablePath": {
                     "type": "string",
-                    "default": "C:\\lc-server\\livecode-server.exe",
+                    "default": "",
                     "description": "Executable Path"
                 },
                 "livecodescript.validate.run": {
