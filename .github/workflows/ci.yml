@@ -5,9 +5,9 @@ on:
       - "main"
       - "master"
       - "develop"
-      - "release*"
     tags:
       - "v*"
+      -"Release-*"
 
 jobs:
   build:
