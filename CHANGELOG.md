@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] - 2022-01-25
+
+### Added
+
+- Added Basic language support for Livecode Builder
+- Added linting support for Livecode Builder
+
+  - Needs Livecode server executable and lc-compiler executable configured
+
+- Added "go to definition" support for Livecode Builder
+- Added "outlines" support for Livecode Builder
+
+### Fixed
+
+- Fixed typos in readme
+- Minor bug fixes
+
 ## [1.0.6] - 2022-01-23
 
 ### Fixed

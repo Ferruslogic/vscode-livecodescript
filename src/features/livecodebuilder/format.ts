@@ -3,12 +3,8 @@ import * as cp from "child_process";
 import * as path from 'path';
 
 
-const enum Setting {
-	LivecodeServerExecutablePath = 'livecodescript.validate.LivecodeServerExecutablePath',
-}
 
-
-export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFormattingEditProvider {
+export class LivecodebuilderFormattingProvider implements vscode.DocumentRangeFormattingEditProvider {
     public async provideDocumentRangeFormattingEdits(
         document: vscode.TextDocument,
         range: vscode.Range,
@@ -35,7 +31,7 @@ export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFor
             let config = vscode.workspace.getConfiguration('livecodescript');
             let executable = config.get("LivecodeServerExecutablePath", "");
  
-            let args: string[] = [(path.resolve(__dirname, '../../tools/Formatter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.livecodescript'];
+            let args: string[] = [(path.resolve(__dirname, '../../../tools/Formatter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.lcb'];
  
           /*  let container = config.get("perltidyContainer", "");
             if (container !== "") {

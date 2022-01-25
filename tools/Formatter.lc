@@ -49,7 +49,7 @@ command FormatScript
   
       break
    case ".source.lcb"
-      
+       write (tScript) & linefeed to stdout
       break
 end switch
 
