@@ -161,17 +161,18 @@ export default class LivecodescriptValidationProvider {
 
 			let options = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) ? { cwd: vscode.workspace.workspaceFolders[0].uri.fsPath } : undefined;
 			let args: string[];
-			if (this.config!.trigger === RunLCSTrigger.onSave) {
-				args = LivecodescriptValidationProvider.FileArgs.slice(0);
-				args.push(textDocument.fileName);
-			} else {
+			// TODO: This could be improved some how
+		//	if (this.config!.trigger === RunLCSTrigger.onSave) {
+		//		args = LivecodescriptValidationProvider.FileArgs.slice(0);
+		//		args.push(textDocument.fileName);
+		//	} else {
 				args = LivecodescriptValidationProvider.BufferArgs;
-			}
+		//	}
 			try {
 				let childProcess = cp.spawn(executable, args, options);
 				childProcess.on('error', (error: Error) => {
 					if (this.pauseValidation) {
-						resolve();
+						resolve(); 
 						return;
 					}
 					this.showErroLCS(error, executable);
@@ -179,10 +180,10 @@ export default class LivecodescriptValidationProvider {
 					resolve();
 				});
 				if (childProcess.pid) {
-					if (this.config!.trigger === RunLCSTrigger.onType) {
+					///if (this.config!.trigger === RunLCSTrigger.onType) {
 						childProcess.stdin.write(textDocument.getText());
 						childProcess.stdin.end();
-					}
+					///}
 					childProcess.stdout.on('data', (data: Buffer) => {
 						decoder.write(data).forEach(processLine);
 					});
