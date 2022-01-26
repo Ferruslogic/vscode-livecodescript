@@ -7,7 +7,7 @@
 
 # Features
 
-Lots of new improvements happening! We now have a CHANGELOG.md
+Lots of new improvements happening! We now have a [Changelog](CHANGELOG.md)
 
 ## General Features
 
@@ -19,6 +19,7 @@ Learn more about the rich features of the Livecode extension:
 - Go to definition (across opened documents)
 - Outline
 - Breadcrumbs
+- Livecode builder support
 
 
 
@@ -27,11 +28,12 @@ Learn more about the rich features of the Livecode extension:
 Install the [VSCode Livecode Extension](https://marketplace.visualstudio.com/items?itemName=FerrusLogic.livecodescript).
 
 
-**This extension requires Livecode server i order to support linting and formating**.
 
-Dowload and install livecode-server. When the plugin is loaded it will ask for Livecode-server executable. 
+**This extension requires Livecode server in order to support linting and formatting**.
 
+Download and install livecode-server. When the plugin is loaded it will ask for Livecode-server executable. 
 
+For Livecode builder (lcb) linting you will also need to specify executable for lcb compiling on the settings, search for LCBCompilerPath 
 
 
 ## Contributing

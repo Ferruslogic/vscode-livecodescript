@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'child_process';
-import { StringDecoder } from 'string_decoder';
 import * as which from 'which';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { ThrottledDelayer } from './utils/async';
+import { ThrottledDelayer } from '../utils/async';
+import { LineDecoder } from '../utils/lineDecoder';
 import * as nls from 'vscode-nls';
 let localize = nls.loadMessageBundle();
 
@@ -18,67 +18,22 @@ const enum Setting {
 	LivecodeServerExecutablePath = 'livecodescript.LivecodeServerExecutablePath',
 }
 
-export class LineDecoder {
-	private stringDecoder: StringDecoder;
-	private remaining: string | null;
 
-	constructor(encoding: BufferEncoding = 'utf8') {
-		this.stringDecoder = new StringDecoder(encoding);
-		this.remaining = null;
-	}
-
-	public write(buffer: Buffer): string[] {
-		let result: string[] = [];
-		let value = this.remaining
-			? this.remaining + this.stringDecoder.write(buffer)
-			: this.stringDecoder.write(buffer);
-
-		if (value.length < 1) {
-			return result;
-		}
-		let start = 0;
-		let ch: number;
-		while (start < value.length && ((ch = value.charCodeAt(start)) === 13 || ch === 10)) {
-			start++;
-		}
-		let idx = start;
-		while (idx < value.length) {
-			ch = value.charCodeAt(idx);
-			if (ch === 13 || ch === 10) {
-				result.push(value.substring(start, idx));
-				idx++;
-				while (idx < value.length && ((ch = value.charCodeAt(idx)) === 13 || ch === 10)) {
-					idx++;
-				}
-				start = idx;
-			} else {
-				idx++;
-			}
-		}
-		this.remaining = start < value.length ? value.substr(start) : null;
-		return result;
-	}
-
-	public end(): string | null {
-		return this.remaining;
-	}
-}
-
-enum RunTrigger {
+enum RunLCSTrigger {
 	onSave,
 	onType
 }
 
-namespace RunTrigger {
+namespace RunLCSTrigger {
 	export let strings = {
 		onSave: 'onSave',
 		onType: 'onType'
 	};
-	export let from = function (value: string): RunTrigger {
+	export let from = function (value: string): RunLCSTrigger {
 		if (value === 'onType') {
-			return RunTrigger.onType;
+			return RunLCSTrigger.onType;
 		} else {
-			return RunTrigger.onSave;
+			return RunLCSTrigger.onSave;
 		}
 	};
 }
@@ -86,8 +41,8 @@ namespace RunTrigger {
 export default class LivecodescriptValidationProvider {
 	
 	private static MatchExpression: RegExp = /(?:(?:Parse|Fatal) error): (.*)(?: in )(.*?)(?: on line )(\d+)/;
-	private static BufferArgs: string[] = [(path.resolve(__dirname, '../../tools/Linter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.livecodescript','-explicitVariables=true'];
-	private static FileArgs: string[] = [path.resolve(__dirname, '../../tools/Linter.lc').replace(/[\\]+/g,"/"), '-scope=.source.livecodescript','-explicitVariables=true'];
+	private static BufferArgs: string[] = [(path.resolve(__dirname, '../../../tools/Linter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.livecodescript','-explicitVariables=true'];
+	private static FileArgs: string[] = [path.resolve(__dirname, '../../../tools/Linter.lc').replace(/[\\]+/g,"/"), '-scope=.source.livecodescript','-explicitVariables=true'];
 
 	private validationEnabled: boolean;
 	private pauseValidation: boolean;
@@ -109,7 +64,7 @@ export default class LivecodescriptValidationProvider {
 		subscriptions.push(this);
 		subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => this.loadConfigP = this.loadConfiguration()));
 
-		vscode.workspace.onDidOpenTextDocument(this.triggerValidate, this, subscriptions);
+		vscode.workspace.onDidOpenTextDocument(this.triggerValidateLCS, this, subscriptions);
 		vscode.workspace.onDidCloseTextDocument((textDocument) => {
 			this.diagnosticCollection!.delete(textDocument.uri);
 			delete this.delayers![textDocument.uri.toString()];
@@ -132,7 +87,7 @@ export default class LivecodescriptValidationProvider {
 		const oldExecutable = this.config?.executable;
 		this.validationEnabled = section.get<boolean>(Setting.Enable, true);
 
-		this.config = await getConfig();
+		this.config = await getLCSConfig();
 
 		this.delayers = Object.create(null);
 		if (this.pauseValidation) {
@@ -144,19 +99,19 @@ export default class LivecodescriptValidationProvider {
 		}
 		this.diagnosticCollection!.clear();
 		if (this.validationEnabled) {
-			if (this.config.trigger === RunTrigger.onType) {
+			if (this.config.trigger === RunLCSTrigger.onType) {
 				this.documentListener = vscode.workspace.onDidChangeTextDocument((e) => {
-					this.triggerValidate(e.document);
+					this.triggerValidateLCS(e.document);
 				});
 			} else {
-				this.documentListener = vscode.workspace.onDidSaveTextDocument(this.triggerValidate, this);
+				this.documentListener = vscode.workspace.onDidSaveTextDocument(this.triggerValidateLCS, this);
 			}
 			// Configuration has changed. Reevaluate all documents.
-			vscode.workspace.textDocuments.forEach(this.triggerValidate, this);
+			vscode.workspace.textDocuments.forEach(this.triggerValidateLCS, this);
 		}
 	}
 
-	private async triggerValidate(textDocument: vscode.TextDocument): Promise<void> {
+	private async triggerValidateLCS(textDocument: vscode.TextDocument): Promise<void> {
 		await this.loadConfigP;
 		if (textDocument.languageId !== 'livecodescript' || this.pauseValidation || !this.validationEnabled) {
 			return;
@@ -166,18 +121,18 @@ export default class LivecodescriptValidationProvider {
 			let key = textDocument.uri.toString();
 			let delayer = this.delayers![key];
 			if (!delayer) {
-				delayer = new ThrottledDelayer<void>(this.config?.trigger === RunTrigger.onType ? 250 : 0);
+				delayer = new ThrottledDelayer<void>(this.config?.trigger === RunLCSTrigger.onType ? 250 : 0);
 				this.delayers![key] = delayer;
 			}
-			delayer.trigger(() => this.doValidate(textDocument));
+			delayer.trigger(() => this.doValidateLCS(textDocument));
 		}
 	}
 
-	private doValidate(textDocument: vscode.TextDocument): Promise<void> {
+	private doValidateLCS(textDocument: vscode.TextDocument): Promise<void> {
 		return new Promise<void>(resolve => {
 			const executable = this.config!.executable;
 			if (!executable) {
-				this.showErrorMessage(localize('noLivecode', 'Cannot validate since a Livecode installation could not be found. Use the setting \'livecodescript.LivecodeServerExecutablePath\' to configure the Livecode executable.'));
+				this.showErrorMessageLCS(localize('noLivecode', 'Cannot validate since a Livecode installation could not be found. Use the setting \'livecodescript.LivecodeServerExecutablePath\' to configure the Livecode executable.'));
 				this.pauseValidation = true;
 				resolve();
 				return;
@@ -206,7 +161,7 @@ export default class LivecodescriptValidationProvider {
 
 			let options = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) ? { cwd: vscode.workspace.workspaceFolders[0].uri.fsPath } : undefined;
 			let args: string[];
-			if (this.config!.trigger === RunTrigger.onSave) {
+			if (this.config!.trigger === RunLCSTrigger.onSave) {
 				args = LivecodescriptValidationProvider.FileArgs.slice(0);
 				args.push(textDocument.fileName);
 			} else {
@@ -219,12 +174,12 @@ export default class LivecodescriptValidationProvider {
 						resolve();
 						return;
 					}
-					this.showError(error, executable);
+					this.showErroLCS(error, executable);
 					this.pauseValidation = true;
 					resolve();
 				});
 				if (childProcess.pid) {
-					if (this.config!.trigger === RunTrigger.onType) {
+					if (this.config!.trigger === RunLCSTrigger.onType) {
 						childProcess.stdin.write(textDocument.getText());
 						childProcess.stdin.end();
 					}
@@ -243,12 +198,12 @@ export default class LivecodescriptValidationProvider {
 					resolve();
 				}
 			} catch (error) {
-				this.showError(error, executable);
+				this.showErroLCS(error, executable);
 			}
 		});
 	}
 
-	private async showError(error: any, executable: string): Promise<void> {
+	private async showErroLCS(error: any, executable: string): Promise<void> {
 		let message: string | null = null;
 		if (error.code === 'ENOENT') {
 			if (this.config!.executable) {
@@ -263,10 +218,10 @@ export default class LivecodescriptValidationProvider {
 			return;
 		}
 
-		return this.showErrorMessage(message);
+		return this.showErrorMessageLCS(message);
 	}
 
-	private async showErrorMessage(message: string): Promise<void> {
+	private async showErrorMessageLCS(message: string): Promise<void> {
 		const openSettings = localize('goToSetting', 'Open Settings');
 		if (await vscode.window.showInformationMessage(message, openSettings) === openSettings) {
 			vscode.commands.executeCommand('workbench.action.openSettings', Setting.LivecodeServerExecutablePath);
@@ -277,10 +232,10 @@ export default class LivecodescriptValidationProvider {
 interface ILivecodescriptConfig {
 	readonly executable: string | undefined;
 	readonly executableIsUserDefined: boolean | undefined;
-	readonly trigger: RunTrigger;
+	readonly trigger: RunLCSTrigger;
 }
 
-async function getConfig(): Promise<ILivecodescriptConfig> {
+async function getLCSConfig(): Promise<ILivecodescriptConfig> {
 	const section = vscode.workspace.getConfiguration();
 
 	let executable: string | undefined;
@@ -311,7 +266,7 @@ async function getConfig(): Promise<ILivecodescriptConfig> {
 		executable = await getLivecodescriptPath();
 	}
 
-	const trigger = RunTrigger.from(section.get<string>(Setting.Run, RunTrigger.strings.onSave));
+	const trigger = RunLCSTrigger.from(section.get<string>(Setting.Run, RunLCSTrigger.strings.onSave));
 	return {
 		executable,
 		executableIsUserDefined,

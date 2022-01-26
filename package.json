@@ -2,7 +2,7 @@
     "name": "livecodescript",
     "description": "This extension adds several features to handle livecodescript files",
     "displayName": "Livecode Language Support",
-    "version": "1.0.6",
+    "version": "1.1.0",
     "author": "FerrusLogic",
     "publisher": "Ferruslogic",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -22,11 +22,12 @@
     },
     "main": "./out/extension.js",
     "activationEvents": [
-        "onLanguage:livecodescript"
+        "onLanguage:livecodescript",
+        "onLanguage:livecodebuilder"
     ],
     "contributes": {
         "configuration": {
-            "title": "Livecodescript",
+            "title": "Livecode",
             "type": "object",
             "properties": {
                 "livecodescript.validate.enable": {
@@ -40,6 +41,30 @@
                     "description": "Executable Path"
                 },
                 "livecodescript.validate.run": {
+                    "type": "string",
+                    "enum": [
+                        "onSave",
+                        "onType"
+                    ],
+                    "default": "onSave",
+                    "description": "Run on"
+                },
+                "livecodebuilder.validate.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable code validation"
+                },
+                "livecodebuilder.LCBCompilerPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "LCB Compiler"
+                },
+                "livecodebuilder.LCBDependenciesPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "LCB dependency modules folder path"
+                },
+                "livecodebuilder.validate.run": {
                     "type": "string",
                     "enum": [
                         "onSave",
@@ -61,9 +86,20 @@
                 "extensions": [
                     ".livecodescript",
                     ".lc",
-                    ".lch"
+                    ".irev"
                 ],
-                "configuration": "./language-configuration.json"
+                "configuration": "./lcs-language-configuration.json"
+            },
+            {
+                "id": "livecodebuilder",
+                "aliases": [
+                    "Livecode builder",
+                    "LCB"
+                ],
+                "extensions": [
+                    ".lcb"
+                ],
+                "configuration": "./lcb-language-configuration.json"
             }
         ],
         "grammars": [
@@ -71,6 +107,17 @@
                 "language": "livecodescript",
                 "scopeName": "source.livecodescript",
                 "path": "./syntaxes/livecodescript.tmLanguage.json",
+                "tokenTypes": {
+                    "entity.name.type.instance.jsdoc": "other",
+                    "entity.name.function.tagged-template": "other",
+                    "meta.import string.quoted": "other",
+                    "variable.other.jsdoc": "other"
+                }
+            },
+            {
+                "language": "livecodebuilder",
+                "scopeName": "source.lcb",
+                "path": "./syntaxes/lcb.tmLanguage.json",
                 "tokenTypes": {
                     "entity.name.type.instance.jsdoc": "other",
                     "entity.name.function.tagged-template": "other",
@@ -106,6 +153,35 @@
                     ],
                     "function.defaultLibrary": [
                         "support.function.livecodescript"
+                    ]
+                }
+            },
+            {
+                "language": "livecodebuilder",
+                "scopes": {
+                    "property": [
+                        "variable.other.property.livecodebuilder"
+                    ],
+                    "property.readonly": [
+                        "variable.other.constant.property.livecodebuilder"
+                    ],
+                    "variable": [
+                        "variable.other.readwrite.livecodebuilder"
+                    ],
+                    "variable.readonly": [
+                        "variable.other.constant.object.livecodebuilder"
+                    ],
+                    "function": [
+                        "entity.name.function.livecodebuilder"
+                    ],
+                    "namespace": [
+                        "entity.name.type.module.livecodebuilder"
+                    ],
+                    "variable.defaultLibrary": [
+                        "support.variable.livecodebuilder"
+                    ],
+                    "function.defaultLibrary": [
+                        "support.function.livecodebuilder"
                     ]
                 }
             }
