@@ -2,7 +2,7 @@
     "name": "livecodescript",
     "description": "This extension adds several features to handle livecodescript files",
     "displayName": "Livecode Language Support",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "author": "FerrusLogic",
     "publisher": "Ferruslogic",
     "license": "SEE LICENSE IN LICENSE.md",

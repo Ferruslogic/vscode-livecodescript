@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-# [Unreleased]
+# [1.1.2] - 2022-01-28
 
 ## Fixed
 
 - Fixed LCB handler names showing extra "(" on outlines
 - Fixed several problems when  Linting LCB
+- Extension load times improved
 
 ## Added
 
