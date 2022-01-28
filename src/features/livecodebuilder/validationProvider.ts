@@ -82,7 +82,7 @@ export default class LivecodebuilderValidationProvider {
 		subscriptions.push(this);
 		subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => this.loadConfigP = this.loadLCBConfiguration()));
 
-		vscode.workspace.onDidOpenTextDocument(this.triggerValidate, this, subscriptions);
+		vscode.workspace.onDidOpenTextDocument(this.triggerValidateLCB, this, subscriptions);
 		vscode.workspace.onDidCloseTextDocument((textDocument) => {
 			this.diagnosticCollection!.delete(textDocument.uri);
 			delete this.delayers![textDocument.uri.toString()];
@@ -119,17 +119,17 @@ export default class LivecodebuilderValidationProvider {
 		if (this.validationEnabled) {
 			if (this.config.trigger === RunTrigger.onType) {
 				this.documentListener = vscode.workspace.onDidChangeTextDocument((e) => {
-					this.triggerValidate(e.document);
+					this.triggerValidateLCB(e.document);
 				});
 			} else {
-				this.documentListener = vscode.workspace.onDidSaveTextDocument(this.triggerValidate, this);
+				this.documentListener = vscode.workspace.onDidSaveTextDocument(this.triggerValidateLCB, this);
 			}
 			// Configuration has changed. Reevaluate all documents.
-			vscode.workspace.textDocuments.forEach(this.triggerValidate, this);
+			vscode.workspace.textDocuments.forEach(this.triggerValidateLCB, this);
 		}
 	}
 
-	private async triggerValidate(textDocument: vscode.TextDocument): Promise<void> {
+	private async triggerValidateLCB(textDocument: vscode.TextDocument): Promise<void> {
 		await this.loadConfigP;
 		if (textDocument.languageId !== 'livecodebuilder' || this.pauseValidation || !this.validationEnabled) {
 			return;
@@ -142,11 +142,11 @@ export default class LivecodebuilderValidationProvider {
 				delayer = new ThrottledDelayer<void>(this.config?.trigger === RunTrigger.onType ? 250 : 0);
 				this.delayers![key] = delayer;
 			}
-			delayer.trigger(() => this.doValidate(textDocument));
+			delayer.trigger(() => this.doValidateLCB(textDocument));
 		}
 	}
 
-	private doValidate(textDocument: vscode.TextDocument): Promise<void> {
+	private doValidateLCB(textDocument: vscode.TextDocument): Promise<void> {
 		return new Promise<void>(resolve => {
 			const executable = this.config!.executable;
 			if (!executable) {
@@ -179,13 +179,13 @@ export default class LivecodebuilderValidationProvider {
 
 			let options = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) ? { cwd: vscode.workspace.workspaceFolders[0].uri.fsPath } : undefined;
 			let args: string[];
-			//if (this.config!.trigger === RunTrigger.onSave) {
+			if (this.config!.trigger === RunTrigger.onSave) {
 				args = LivecodebuilderValidationProvider.FileArgs.slice(0);
-				args.push('-lcbsource='+textDocument.fileName.toString());
-			//} else {
-			//	args = LivecodebuilderValidationProvider.BufferArgs;
-			//	args.push(textDocument.fileName);
-			//}
+				args.push('-filepath='+textDocument.fileName.toString());
+			} else {
+				args = LivecodebuilderValidationProvider.BufferArgs;
+				args.push(textDocument.fileName);
+			}
 			try {
 				let childProcess = cp.spawn(executable, args, options);
 				childProcess.on('error', (error: Error) => {
@@ -198,10 +198,10 @@ export default class LivecodebuilderValidationProvider {
 					resolve();
 				});
 				if (childProcess.pid) {
-					//if (this.config!.trigger === RunTrigger.onType) {
+					if (this.config!.trigger === RunTrigger.onType) {
 						childProcess.stdin.write(textDocument.getText());
 						childProcess.stdin.end();
-					//}
+					}
 					childProcess.stdout.on('data', (data: Buffer) => {
 						decoder.write(data).forEach(processLine);
 					});

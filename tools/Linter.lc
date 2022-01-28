@@ -7,7 +7,7 @@ local sTempFile
 Lint
 
 command Lint
-   local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
+   local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory, tFilePath
    local tIndex
    repeat for each element theArgument in the commandArguments
       split theArgument with "="
@@ -24,8 +24,9 @@ command Lint
             repeat with tIndex = 1 to the number of elements in theArgument[2]
                replace "\\" with "/"  in theArgument[2][tIndex]
                replace "\" with "/"  in theArgument[2][tIndex]
+
                replace quote with empty in theArgument[2][tIndex]
-               
+               if the last char of  theArgument[2][tIndex] is "/" then delete the last char of  theArgument[2][tIndex]
                if there is a folder (theArgument[2][tIndex]) then
                   put " --modulepath " & quote & theArgument[2][tIndex] & quote after tModulePaths
                end if
@@ -35,21 +36,42 @@ command Lint
             put theArgument[2] into tLCCompile
             break
          case "-filepath"
-            set the itemDelimiter to slash
-            put item -1 of theArgument[2] into tFilename
-            put item 1 to -2 of theArgument[2] & "/.lci" into tLCIDirectory
-            put " --modulepath " & tLCIDirectory before tModulePaths
+			
+
+            //set the itemDelimiter to slash
+
+            put theArgument[2] into tFilePath
+            replace "\" with "/" in tFilePath
+            //put item -1 of tFilePath into tFilename
+            --put item 1 to -2 of tFilePath & "/.lci" into tLCIDirectory
+            --put " --modulepath " & tLCIDirectory before tModulePaths
             set the itemDelimiter to comma
             break
       end switch
    end repeat
    
    
-   
-   read from stdin until empty
-   local tScript
-   put it into tScript
-   
+   if tFilePath is empty then
+	   	read from stdin until empty
+	   	local tScript
+	   	put it into tScript
+
+	   	 if tScript is empty then 
+		   	writeToSTDOUT ""
+		   	quit
+		end if
+	else if  there is not  a file tFilePath then
+	put "ok0001" & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
+		writeToSTDOUT ""
+		quit
+   end if
+ 
+
+	put "ok0002" & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
+ 	
+	 
+	
+
    put the scriptParsingErrors into sErrorsList
    split sErrorsList with return
    
@@ -71,7 +93,7 @@ command Lint
          
          
          set the script of stack "TestScript" to tScript
-         
+        // put the result & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
          put the result into tErrors
          split tErrors with return
          repeat with tIndex = 1 to the number of elements in tErrors
@@ -83,7 +105,8 @@ command Lint
                   if tErrors[tIndex][4] is not empty then
                      put " (" & item 4 of tErrors[tIndex][4] & ")" after tMessage
                   end if
-                  write textencode(("Parse error: " & tMessage & " in " & tErrors[tIndex][2] + tLineOffset & " on line " &   tErrors[tIndex][2] + tLineOffset & linefeed),"UTF-8")  to stdout
+                 
+					writeToSTDOUT ("Parse error: " & tMessage & " in " & tErrors[tIndex][2] + tLineOffset & " on line " &   tErrors[tIndex][2] + tLineOffset )
                end if
             end if
          end repeat
@@ -99,19 +122,36 @@ command Lint
          include sTempFile
          break
       case ".source.lcb"
-                  
+ 			local tCommand	                 
          if there is not a folder tLCIDirectory then
             create folder tLCIDirectory
          end if
          
+	put "ok0003" & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
+ 	
+        
+         if tFilePath is empty then
+        	 SaveToTempFile tScript
+        else 
+        	put tFilePath into sTempFile
+     	end if
+         put ensureQuoted( tLCCompile) & (" --interface " & ensureQuoted(sTempFile & ".lci")) & tModulePaths & " -- " & ensureQuoted(sTempFile) into  tCommand
+
+	put tCommand & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
+         
+         --replace quote with empty in tLCCompile
          
          
-         SaveToTempFile tScript
-         set the hideConsoleWindows to true
-         replace quote with empty in tLCCompile
+        put  getCompileLCBFileAndReturnResult( tLCCompile, sTempFile, sTempFile & ".lci", tModulePaths) into tErrors
+
+        -- put shell(tCommand ) into tErrors
          
-         put shell(quote & tLCCompile  &  quote & " -v " & tModulePaths & " -- " & sTempFile ) into tErrors
-         
+
+		   if tErrors is empty then 
+		   	writeToSTDOUT ""
+		   	DeleteTempFile
+		   	quit
+		   end if
          
          
          split tErrors with return
@@ -120,12 +160,15 @@ command Lint
             if the platform is "Win32" and char 2 to 3 of tErrors[tIndex] is ":/" then
                  if  tErrors[tIndex] is not empty then 
                split tErrors[tIndex] with ":"
-               write textencode(("Parse error: " & tErrors[tIndex][6] & " in " & tErrors[tIndex][2]  & " on line " &   tErrors[tIndex][3]  & linefeed),"UTF-8")  to stdout
+               
+                writeToSTDOUT  ("Parse error: " & tErrors[tIndex][6] & " in " & tErrors[tIndex][2]  & " on line " &   tErrors[tIndex][3]  )
+
                end if
             else
                if  tErrors[tIndex] is not empty then 
                  split tErrors[tIndex] with ":"
-                write textencode(("Parse error: " & tErrors[tIndex][5] & " in " & tErrors[tIndex][1]  & " on line " &   tErrors[tIndex][2]  & linefeed),"UTF-8")  to stdout
+                
+                writeToSTDOUT  ("Parse error: " & tErrors[tIndex][5] & " in " & tErrors[tIndex][1]  & " on line " &   tErrors[tIndex][2] )
                end if
             end if
             
@@ -135,9 +178,42 @@ command Lint
          break
    end switch
   
-   write linefeed to stdout
+   writeToSTDOUT ""
+   
    
 end Lint
+
+
+private function getCompileLCBFileAndReturnResult pCompiler, pFile, pInterface, pModulesPaths
+     local tCommand
+     put ensureQuoted(pCompiler) & (" --interface " & ensureQuoted(pInterface)) & pModulesPaths & " -- " & ensureQuoted(pFile) into  tCommand
+     set the hideConsoleWindows to true
+     return shell(tCommand ) 
+end getCompileLCBFileAndReturnResult
+
+
+-- Make sure is quoted and without leading spaces
+function ensureQuoted pTarget
+	if first char of pTarget is not quote then
+		return quote & (word 1 to -1 of pTarget) & quote 
+	else 
+		return (word 1 to -1 of pTarget) 
+	end if
+end ensureQuoted
+
+
+private command writeToSTDOUT pWhat
+	--put pWhat & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
+	if pWhat is empty then
+		write linefeed to stdout
+	else 
+		write textencode(pWhat,"UTF-8" )  to stdout
+		write linefeed to stdout
+	end if
+	
+	
+end writeToSTDOUT
+
 
 command SaveToTempFile pScript
   put the temporary folder & slash & uuid() into sTempFile
@@ -145,7 +221,10 @@ command SaveToTempFile pScript
 end SaveToTempFile
 
 command DeleteTempFile
-  delete file sTempFile
+	if tFilePath is empty then
+  		delete file sTempFile
+  		delete file sTempFile & ".lci"
+	end if
 end DeleteTempFile
 
 command scriptExecutionError pStack, pFiles
@@ -162,12 +241,16 @@ command scriptExecutionError pStack, pFiles
             if item 4 of pStack[tIndex] is not empty then
                put " (" & item 4 of pStack[tIndex] & ")" after tMessage
             end if
-            write item 2 of pStack[tIndex], item 3 of pStack[tIndex], tMessage & linefeed to stdout
+            
+
+                writeToSTDOUT  (item 2 of pStack[tIndex], item 3 of pStack[tIndex], tMessage)
+
          end if
       end if
    end repeat
    
    DeleteTempFile
    
-   write linefeed to stdout
+   writeToSTDOUT ""
+   
 end scriptExecutionError
