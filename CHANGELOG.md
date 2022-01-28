@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+# [Unreleased]
+
+## Fixed
+
+- Fixed LCB handler names showing extra "(" on outlines
+- Fixed several problems when  Linting LCB
+
+## Added
+
+- Enhanced outlines
+  - Private handlers now shows a 🔒 icon on outlines
+  - Unsafe (LCB) handlers now shows a ⚠️ icon on outlines
+  - Foreign (LCB) handlers now shows a 👽 icon on outlines
+  - global (LCS) variables now shows a 🌐 icon on outlines
+
 ## [1.1.1] - 2022-01-25
 
 ### Fixed
