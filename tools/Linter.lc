@@ -61,13 +61,13 @@ command Lint
 		   	quit
 		end if
 	else if  there is not  a file tFilePath then
-	put "ok0001" & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
+
 		writeToSTDOUT ""
 		quit
    end if
  
 
-	put "ok0002" & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
+	
  	
 	 
 	
@@ -93,7 +93,6 @@ command Lint
          
          
          set the script of stack "TestScript" to tScript
-        // put the result & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
          put the result into tErrors
          split tErrors with return
          repeat with tIndex = 1 to the number of elements in tErrors
@@ -127,7 +126,6 @@ command Lint
             create folder tLCIDirectory
          end if
          
-	put "ok0003" & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
  	
         
          if tFilePath is empty then
@@ -137,7 +135,6 @@ command Lint
      	end if
          put ensureQuoted( tLCCompile) & (" --interface " & ensureQuoted(sTempFile & ".lci")) & tModulePaths & " -- " & ensureQuoted(sTempFile) into  tCommand
 
-	put tCommand & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
          
          --replace quote with empty in tLCCompile
          
@@ -203,7 +200,6 @@ end ensureQuoted
 
 
 private command writeToSTDOUT pWhat
-	--put pWhat & cr & "-------------------------------------------------------------" & cr after url("file:C:/tmp/linter.log")
 	if pWhat is empty then
 		write linefeed to stdout
 	else 
