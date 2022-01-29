@@ -10,7 +10,8 @@ export class LivecodebuilderDefinitionProvider implements vscode.DefinitionProvi
     provideDefinition(origDocument, position, token) {
         const word = origDocument.getText(origDocument.getWordRangeAtPosition(position));
 
-         const  defPattern = new RegExp(`(((\\s)*(private|public|handler)+(\\s))|((\\s)*(private|variable|constant)+(\\s)+.*))${word}(?:\\s|$)`, 'gim');
+         const  defPattern = new RegExp(`(((\\s)*(private|unsafe|foreign|public|handler)+(\\s))|((\\s)*(private|variable|constant)+(\\s)+.*))${word}(\\s|\\(|$){1}?`, 'gm');
+         
          const  localPattern = new RegExp(`(((\\s)*(private)+(\\s))|((\\s)*(local)+(\\s)+.*))${word}(?:\\s|$)`, 'gim');
      
         
