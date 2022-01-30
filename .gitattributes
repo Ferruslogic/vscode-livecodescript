@@ -1,0 +1,3 @@
+*.livecodescript linguist-language=Livecode
+*.livecode linguist-language=Livecode
+*.lcb linguist-language=Livecode Builder
