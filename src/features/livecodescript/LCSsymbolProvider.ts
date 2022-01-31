@@ -3,12 +3,6 @@ import * as vscode from "vscode";
 
 export class livecodescriptConfigDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
 
-    private format(cmd: string): string {
-        return cmd.substr(1).toLowerCase().replace(/^\w/, c => c.toUpperCase())
-    }
-
-
-
     public provideDocumentSymbols(
         document: vscode.TextDocument,
         token: vscode.CancellationToken): Promise<vscode.DocumentSymbol[]> {
@@ -84,19 +78,10 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
                 if (lineText.match(/^before|^after\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], tokens[2], symbolkind_event, line.range, line.range)
-                    handler_Symbol.kind = symbolkind_cmd
-                    handler_Symbol.name = tokens[1]
-                    handler_Symbol.range = line.range
-                    handler_Symbol.selectionRange = line.range
-                    handler_Symbol.range = line.range
-
                     inside_handler = true
-
                 }
                 else if (lineText.match(/^end\s/)) {
-
                     if (inside_handler) {
-
                         handler_Symbol.range = new vscode.Range(handler_Symbol.range.start, line.range.end);
                         handler_Symbol.selectionRange = handler_Symbol.range
 
@@ -130,19 +115,12 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 //////Private Command
                 if (lineText.match(/^(private)\s+command\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[2],'🔒', symbolkind_cmd, line.range, line.range)
-
-
-
                     inside_handler = true
-
                 }
                 else if (lineText.match(/^end\s/)) {
-
                     if (inside_handler) {
-
                         handler_Symbol.range = new vscode.Range(handler_Symbol.range.start, line.range.end);
                         handler_Symbol.selectionRange = handler_Symbol.range
-
                         nodes[nodes.length - 1].push(handler_Symbol)
                         //nodes.pop()
                         inside_handler = false
@@ -154,18 +132,12 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
                 if (lineText.match(/^function\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[1], '', symbolkind_ftn, line.range, line.range)
-                    
-
                     inside_handler = true
-
                 }
                 else if (lineText.match(/^end\s/)) {
-
                     if (inside_handler) {
-
                         handler_Symbol.range = new vscode.Range(handler_Symbol.range.start, line.range.end);
                         handler_Symbol.selectionRange = handler_Symbol.range
-
                         nodes[nodes.length - 1].push(handler_Symbol)
                         //nodes.pop()
                         inside_handler = false
@@ -177,15 +149,11 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 if (lineText.match(/^(private)\s+function\s+[\w]+/i)) {
                     handler_Symbol = new vscode.DocumentSymbol(tokens[2], '🔒', symbolkind_ftn, line.range, line.range)
                     inside_handler = true
-
                 }
                 else if (lineText.match(/^end\s/)) {
-
                     if (inside_handler) {
-
                         handler_Symbol.range = new vscode.Range(handler_Symbol.range.start, line.range.end);
                         handler_Symbol.selectionRange = handler_Symbol.range
-
                         nodes[nodes.length - 1].push(handler_Symbol)
                         //nodes.pop()
                         inside_handler = false

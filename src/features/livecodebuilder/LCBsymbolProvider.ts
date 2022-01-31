@@ -3,10 +3,6 @@ import * as vscode from "vscode";
 
 export class livecodebuilderConfigDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
 
-    private format(cmd: string): string {
-        return cmd.substr(1).toLowerCase().replace(/^\w/, c => c.toUpperCase())
-    }
-
 
 
     public provideDocumentSymbols(
@@ -21,7 +17,6 @@ export class livecodebuilderConfigDocumentSymbolProvider implements vscode.Docum
             let blockcomment_Symbol = new vscode.DocumentSymbol("start", "start", vscode.SymbolKind.Method, line.range, line.range)
 
 
-
             let inside_handler = false
             let inside_blockcomment = false
 
@@ -29,14 +24,12 @@ export class livecodebuilderConfigDocumentSymbolProvider implements vscode.Docum
 
             let symbolkind_module = vscode.SymbolKind.Module
             let symbolkind_marker = vscode.SymbolKind.Field
-            let symbolkind_private_handler = vscode.SymbolKind.Method
-            let symbolkind_ftn = vscode.SymbolKind.Function
             let symbolkind_public_handler = vscode.SymbolKind.Method
-            let symbolkind_getprop = vscode.SymbolKind.Property
-            let symbolkind_setprop = vscode.SymbolKind.Property
+            let symbolkind_property = vscode.SymbolKind.Property
             let symbolkind_blockcomment = vscode.SymbolKind.String
             let symbolkind_comment = vscode.SymbolKind.String
             let symbolkind_variable = vscode.SymbolKind.Variable
+            let symbolkind_constant = vscode.SymbolKind.Constant
 
             let re = /([(=\"])/gi;
             var lineText;
@@ -63,27 +56,8 @@ export class livecodebuilderConfigDocumentSymbolProvider implements vscode.Docum
 
 
 
-                ////Foreign Handler
-                /*   if (lineText.match(/^\s*(public\s*)?(__safe\s*)?(foreign\s*){1}(handler)\s+/)) {
-                       let thandlerName = tokens[2];
-   
-                       if (tokens[0] == 'public') thandlerName = tokens[2];
-                       
-   
-                       handler_Symbol = new vscode.DocumentSymbol(thandlerName, '', symbolkind_public_handler, line.range, line.range)
-                  
-                       if (inside_handler) {
-                           handler_Symbol.children.push(handler_Symbol)
-                       }
-                       else {
-                           nodes[nodes.length - 1].push(handler_Symbol)
-                       }
-                  
-                   }*/
 
-
-
-                   // TODO extent to LCS symbolprovider
+                // TODO extent to LCS symbolprovider
 
                 ////Handler
                 if (lineText.match(/^\s*(public\s+)?(private\s+)?(unsafe\s+)?(handler)\s+/)) {
@@ -101,7 +75,7 @@ export class livecodebuilderConfigDocumentSymbolProvider implements vscode.Docum
                             tIcons += '⚠️';
                         }
                     }
-                    handler_Symbol = new vscode.DocumentSymbol(tokens[tNameDepth+1], tIcons, symbolkind_public_handler, line.range, line.range)
+                    handler_Symbol = new vscode.DocumentSymbol(tokens[tNameDepth + 1], tIcons, symbolkind_public_handler, line.range, line.range)
                     inside_handler = true
                 }
                 else if (lineText.match(/^\s*end\s+handler\s*/)) {
@@ -131,14 +105,14 @@ export class livecodebuilderConfigDocumentSymbolProvider implements vscode.Docum
                             tIcons += '🔒';
                         } else if (tokens[index1] == "__safe") {
                             ++tNameDepth;
-                            tIcons.replace("⚠️.*","🛡️");
+                            tIcons.replace("⚠️.*", "🛡️");
                             tIcons = tIcons.replace(/⚠️/, "🛡️");
                         }
                     }
-                    handler_Symbol = new vscode.DocumentSymbol(tokens[tNameDepth+1], tIcons, symbolkind_public_handler, line.range, line.range)
+                    handler_Symbol = new vscode.DocumentSymbol(tokens[tNameDepth + 1], tIcons, symbolkind_public_handler, line.range, line.range)
                     nodes[nodes.length - 1].push(handler_Symbol)
                 }
-        
+
 
 
                 ////block comment
@@ -167,17 +141,20 @@ export class livecodebuilderConfigDocumentSymbolProvider implements vscode.Docum
 
                     for (var index1 in tokens) {
                         if (tokens[index1] == "\"") tInQuotes = !tInQuotes;
+
+                        if (tInQuotes !== true){
+                            if (tokens[index1].startsWith("--"))break;
+                            if (tokens[index1].startsWith("#"))break;
+                        };
+
                         if (tInQuotes == true || index1 == '0' || tokens[index1] == '=' || tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
                         if (tokens[index1] == 'variable') { continue; }
                         if (tokens[index1] == 'as') { break; }
 
+
                         let localvar_Symbol = new vscode.DocumentSymbol(tokens[index1], '', symbolkind_variable, line.range, line.range);
 
-                        if (inside_blockcomment) {
-
-
-                        }
-                        else {
+                        if (!inside_blockcomment) {
                             localvar_Symbol.range = new vscode.Range(localvar_Symbol.range.start, line.range.end);
                             localvar_Symbol.selectionRange = localvar_Symbol.range
                             if (inside_handler) {
@@ -191,6 +168,75 @@ export class livecodebuilderConfigDocumentSymbolProvider implements vscode.Docum
                     }
 
                 }
+
+
+
+
+
+
+
+                ////constants
+                if (lineText.match(/(^\s*private\s*constant|^\s*constant)\s+[\w]+/)) {
+                    let tInQuotes: Boolean = false;
+
+                    for (var index1 in tokens) {
+                        if (tokens[index1] == "\"") tInQuotes = !tInQuotes;
+                        if (tInQuotes == true || index1 == '0' || tokens[index1] == '=' || tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
+                        if (tokens[index1] == 'constant') { continue; }
+                        if (tokens[index1] == 'is') { break; }
+
+                        let localconstant_Symbol = new vscode.DocumentSymbol(tokens[index1], '', symbolkind_constant, line.range, line.range);
+
+                        if (!inside_blockcomment) {
+                            localconstant_Symbol.range = new vscode.Range(localconstant_Symbol.range.start, line.range.end);
+                            localconstant_Symbol.selectionRange = localconstant_Symbol.range
+                            if (inside_handler) {
+                                handler_Symbol.children.push(localconstant_Symbol)
+                            }
+                            else {
+                                nodes[nodes.length - 1].push(localconstant_Symbol)
+                            }
+
+                        }
+                    }
+
+                }
+
+
+
+
+                //symbolkind_property
+
+                ////property
+                if (lineText.match(/(^\s*property)\s+[\w]+/)) {
+                    let tInQuotes: Boolean = false;
+
+                    for (var index1 in tokens) {
+                        if (tokens[index1] == "\"") tInQuotes = !tInQuotes;
+                        if (tInQuotes == true || index1 == '0' || tokens[index1] == '=' || tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
+                        if (tokens[index1] == 'property') { continue; }
+                        if (tokens[index1] == 'get') { break; }
+                        if (tokens[index1] == 'set') { break; }
+
+                        let property_Symbol = new vscode.DocumentSymbol(tokens[index1], '', symbolkind_property, line.range, line.range);
+
+                        if (!inside_blockcomment) {
+                            property_Symbol.range = new vscode.Range(property_Symbol.range.start, line.range.end);
+                            property_Symbol.selectionRange = property_Symbol.range
+                            if (inside_handler) {
+                                handler_Symbol.children.push(property_Symbol)
+                            }
+                            else {
+                                nodes[nodes.length - 1].push(property_Symbol)
+                            }
+
+                        }
+                    }
+
+                }
+
+
+
 
 
 

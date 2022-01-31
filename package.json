@@ -190,6 +190,10 @@
             {
                 "language": "livecodescript",
                 "path": "./snippets/livecode.code-snippets"
+            },
+            {
+                "language": "livecodebuilder",
+                "path": "./snippets/livecodebuilder.code-snippets"
             }
         ]
     },

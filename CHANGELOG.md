@@ -4,22 +4,43 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-# [1.1.3] - 2022-01-28
 
-## Fixed
+# [Unreleased]
+
+### Fixed
+
+- [LCB] Fixed problem with variable outlines when inline comments are present
+
+### Added
+
+- Minor speed improvements
+- [LCB] Basic snippets
+  - If
+  - Repeat
+  - Handlers
+- [LCB] Added Outlines for properties
+- [LCB] Added Outlines for constants
+
+### Removed
+
+- Removed obsolete code on symbol Providers
+
+## [1.1.3] - 2022-01-28
+
+### Fixed
 
 - Fixed definition resolution for LCB handlers and module variables
 - Removed unnecessary logs when linting LCB
 
 ## [1.1.2] - 2022-01-28
 
-## Fixed
+### Fixed
 
 - Fixed LCB handler names showing extra "(" on outlines
 - Fixed several problems when Linting LCB
 - Extension load times improved
 
-## Added
+### Added
 
 - Enhanced outlines
   - Private handlers now shows a 🔒 icon on outlines

@@ -1,0 +1,24 @@
+{
+  "Handler": {
+    "prefix": ["handler"],
+    "body": "handler ${1:name}(${2:params})\n\t${3:# code...}\nend handler\n${0}"
+  },
+  "Private Handler": {
+    "prefix": ["private handler"],
+    "body": "private handler ${1:name}(${2:params})\n\t${3:# code...}\nend handler\n${0}"
+  },
+  "If": {
+    "prefix": "if",
+    "body": "if ${1:# code...} then\n\t${2:# code...}\nend if\n${0}"
+  },
+  "Repeat": {
+    "prefix": "repeat",
+    "body": "repeat ${1:loopform}\n\t${0:# code...}\nend repeat"
+  },
+  "Foreign Handler": {
+    "prefix": ["foreign handler"],
+    "body": "foreign handler ${1:name}(${2:params}) returns ${3:type} binds to \"${4:binding string}\"${0}"
+  }
+  
+
+}
