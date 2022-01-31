@@ -94,7 +94,7 @@
   ],
   "repository": {
     "comment-line": {
-      "begin": "--",
+      "begin": "--|//",
       "beginCaptures": {
         "0": {
           "name": "punctuation.definition.comment.double-dash.lcb"
