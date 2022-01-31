@@ -34,8 +34,8 @@
     ],
 
     "indentationRules": {
-        "increaseIndentPattern": "^(\\s)*(if.*(then(\\s|$)*)$|else|repeat|(private\\s)*(function|command|on|getprop|setprop)|switch)",
-        "decreaseIndentPattern": "\\b(else:)|\\b(else)|\\b((end(\\s)+(if|repeat|.*|switch)))"
+        "increaseIndentPattern": "^(\\s)*(if.*(then(\\s|$)*)$|else|repeat|(private\\s)*(public\\s)*(handler))",
+        "decreaseIndentPattern": "\\b(else:)|\\b(else)|\\b((end(\\s)+(if|repeat|.*)))"
     },
     "folding": {
         "markers": {
