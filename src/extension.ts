@@ -4,15 +4,15 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
 
-import LivecodescriptValidationProvider from './features/livecodescript/validationProvider';
-import { LivecodescriptFormattingProvider } from "./features/livecodescript/format";
-import { LivecodescriptDefinitionProvider } from "./features/livecodescript/definitionProvider";
-import { livecodescriptConfigDocumentSymbolProvider } from "./features/livecodescript/symbolProvider";
+import LivecodescriptValidationProvider from './features/livecodescript/LCSvalidationProvider';
+import { LivecodescriptFormattingProvider } from "./features/livecodescript/LCSformat";
+import { LivecodescriptDefinitionProvider } from "./features/livecodescript/LCSdefinitionProvider";
+import { livecodescriptConfigDocumentSymbolProvider } from "./features/livecodescript/LCSsymbolProvider";
 
-import LivecodebuilderValidationProvider from "./features/livecodebuilder/validationProvider";
-import { LivecodebuilderFormattingProvider } from "./features/livecodebuilder/format";
-import { LivecodebuilderDefinitionProvider } from "./features/livecodebuilder/definitionProvider";
-import { livecodebuilderConfigDocumentSymbolProvider } from "./features/livecodebuilder/symbolProvider";
+import LivecodebuilderValidationProvider from "./features/livecodebuilder/LCBvalidationProvider";
+import { LivecodebuilderFormattingProvider } from "./features/livecodebuilder/LCBformat";
+import { LivecodebuilderDefinitionProvider } from "./features/livecodebuilder/LCBdefinitionProvider";
+import { livecodebuilderConfigDocumentSymbolProvider } from "./features/livecodebuilder/LCBsymbolProvider";
 
 
 export function activate(context: vscode.ExtensionContext) {
