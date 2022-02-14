@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-# [1.1.5] - 2022-01-30
+# [1.1.6] - 2022-02-14
+
+### Fixed
+- [LCS] Fixed incorrect outlines for block comments
+
+### Changed
+
+- [LCS] Changed the formatter.
+  - Speed boost up to 6x
+  - Clear extra spaces on beginning and end of lines
+
+
+## [1.1.5] - 2022-01-30
 
 ### Fixed
 
