@@ -36,8 +36,8 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
             for (var i = 0; i < document.lineCount; i++) {
                 var line = document.lineAt(i);
-                lineText = line.text.replace(re," $1 ");
-               
+                lineText = line.text.replace(re, " $1 ");
+
                 let tokensDirty = lineText.split(/[\s]+/)
 
 
@@ -114,7 +114,7 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
                 //////Private Command
                 if (lineText.match(/^(private)\s+command\s+[\w]+/i)) {
-                    handler_Symbol = new vscode.DocumentSymbol(tokens[2],'🔒', symbolkind_cmd, line.range, line.range)
+                    handler_Symbol = new vscode.DocumentSymbol(tokens[2], '🔒', symbolkind_cmd, line.range, line.range)
                     inside_handler = true
                 }
                 else if (lineText.match(/^end\s/)) {
@@ -201,10 +201,20 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
                 ////block comment
                 if (lineText.match(/\/\*/i)) {
-                    blockcomment_Symbol = new vscode.DocumentSymbol("comment", tokens[1], symbolkind_comment, line.range, line.range)
-                    inside_blockcomment = true
+                    let tInQuotes: Boolean = false;
+                    for (var index1 in tokens) {
+                        if (tokens[index1] == "\"") tInQuotes = !tInQuotes;
+                        if (!tInQuotes && tokens[index1] == "\/\*") {
+                            blockcomment_Symbol = new vscode.DocumentSymbol("comment", tokens[1], symbolkind_comment, line.range, line.range)
+                            inside_blockcomment = true
+                            break;
+                        }
+                    }
+
+
                 }
                 if (lineText.match(/\*\//i) && inside_blockcomment) {
+
                     if (inside_blockcomment) {
                         blockcomment_Symbol.range = new vscode.Range(blockcomment_Symbol.range.start, line.range.end);
                         blockcomment_Symbol.selectionRange = blockcomment_Symbol.range
@@ -222,18 +232,18 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
                 ////local variables
                 if (lineText.match(/^\s*local\s+[\w]+/i)) {
                     let tInQuotes: Boolean = false;
-                  
+
 
                     for (var index1 in tokens) {
                         if (tokens[index1] == "\"") tInQuotes = !tInQuotes;
-                        
-                        
-                        if (tInQuotes !== true){
-                            if (tokens[index1].startsWith("--"))break;
-                            if (tokens[index1].startsWith("#"))break;
+
+
+                        if (tInQuotes !== true) {
+                            if (tokens[index1].startsWith("--")) break;
+                            if (tokens[index1].startsWith("#")) break;
                         };
-                        
-                        if (tInQuotes == true || index1 == '-'|| index1 == '#' || index1 == '0' || tokens[index1] == '=' ||tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
+
+                        if (tInQuotes == true || index1 == '-' || index1 == '#' || index1 == '0' || tokens[index1] == '=' || tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
 
                         let localvar_Symbol = new vscode.DocumentSymbol(tokens[index1], '', symbolkind_variable, line.range, line.range);
 
@@ -254,22 +264,22 @@ export class livecodescriptConfigDocumentSymbolProvider implements vscode.Docume
 
                 }
 
-                
+
                 ////global variables 
                 if (lineText.match(/^\s*global\s+[\w]+/i)) {
                     let tInQuotes: Boolean = false;
 
                     for (var index1 in tokens) {
-                        if (tokens[index1] == "\"") 
-                        tInQuotes = !tInQuotes;
-                        if (tInQuotes == true || index1 == '0' || tokens[index1] == '=' ||tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
+                        if (tokens[index1] == "\"")
+                            tInQuotes = !tInQuotes;
+                        if (tInQuotes == true || index1 == '0' || tokens[index1] == '=' || tokens[index1] == '"' || tokens[String(Number(index1) - 1)] == '=' || tokens[index1] == ',') continue;
 
-                        if (tInQuotes !== true){
-                            if (tokens[index1].startsWith("--"))break;
-                            if (tokens[index1].startsWith("#"))break;
+                        if (tInQuotes !== true) {
+                            if (tokens[index1].startsWith("--")) break;
+                            if (tokens[index1].startsWith("#")) break;
                         };
 
-                        let localvar_Symbol = new vscode.DocumentSymbol(tokens[index1],'🌐', symbolkind_variable, line.range, line.range);
+                        let localvar_Symbol = new vscode.DocumentSymbol(tokens[index1], '🌐', symbolkind_variable, line.range, line.range);
 
                         if (inside_blockcomment) {
                         }
