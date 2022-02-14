@@ -1,9 +1,6 @@
 # VS Code support for Livecode language
 
-
-
 [![CI](https://github.com/ferruslogic/vscode-livecodescript/actions/workflows/ci.yml/badge.svg)](https://github.com/ferruslogic/vscode-livecodescript/actions/workflows/ci.yml) [![CI](https://badgen.net/vs-marketplace/v/ferruslogic.livecodescript)](https://marketplace.visualstudio.com/items?itemName=ferruslogic.livecodescript)
-
 
 # Features
 
@@ -21,28 +18,24 @@ Learn more about the rich features of the Livecode extension:
 - Breadcrumbs
 - Livecode builder support
 
-
-
 ## Usage
 
 Install the [VSCode Livecode Extension](https://marketplace.visualstudio.com/items?itemName=FerrusLogic.livecodescript).
 
-
-
 **This extension requires Livecode server in order to support linting and formatting**.
 
-Download and install livecode-server. When the plugin is loaded it will ask for Livecode-server executable. 
+Download and install livecode-server. When the plugin is loaded it will ask for Livecode-server executable.
 
-For Livecode builder (lcb) linting you will also need to specify executable for lcb compiling on the settings, search for LCBCompilerPath 
+Search for 'Livecode Server Executable Path' in VSCode configuration.
 
+## Livecode builder (LCB) support
+
+LiveCode Builder is a variant of the current LiveCode scripting language (LiveCode Script) which has been designed for 'systems' building. It is statically compiled with optional static typing and direct foreign code interconnect.
+To use the lcb linter you must configure the lc-compile executable. Search for 'Livecodebuilder: LCBCompiler Path' and 'Livecodebuilder: LCBDependencies Path' on VScode configuration.
 
 ## Contributing
 
 Contributions are welcome. Read more at [Contribute](CONTRIBUTING.md)
-
-
-
-
 
 # License
 
