@@ -9,7 +9,7 @@ FormatScript
 command FormatScript
 	local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
 	local tIndex
-   local tFirstline
+	local tFirstline
 
 	repeat for each element theArgument in the commandArguments
 
@@ -25,14 +25,14 @@ command FormatScript
 	local tScript
 	put it into tScript
 
-   //preserve first line for script files
-   if the first line of tScript begins with "<?" then put the first line of tScript into tFirstline
+	//preserve first line for script files
+	if the first line of tScript begins with "<?" then put the first line of tScript into tFirstline
 
 	local tErrors
 	switch tScope
 		case ".source.livecodescript"
-         put  textFormatAsScript(tScript, 1, true, false, true) into tScript
-          if tFirstline is not empty then put tFirstline into the first line of tScript
+			put textFormatAsScript(tScript, 1, true, false, true) into tScript
+			if tFirstline is not empty then put tFirstline into the first line of tScript
 			write tScript to stdout
 			break
 		case ".source.iRev"
@@ -51,10 +51,10 @@ private function __GetPreference pPreference, pDefault
 end __GetPreference
 
 
-
+-------------------------------------- linters -----------------------------------
 ----------------------------------------------------------------------------------
 constant kObjects = "graphic grc image img button btn scrollbar player field fld card cd EPS group widget control stack window wd", kInputTokens = "U003B,U002DU002D,U0023,U002FU002F,U002FU0A4,U005C", kOutputTokens = ";,--,#,//,/*,\"
-constant kKeywords = "and,or,abbreviated,after,any,array,as,ascending,at,back,before,binfile,black,bold,box,break,browse,brush,bucket,button,by,byte,bytes,card,cascade,case,catch,character,characters,codepoint,codepoints,codeunit,codeunits,colorPalette,comboBox,COMn:,control,curve,dateItems,dateTime,default,descending,dropper,each,effective,eighth,element,else,end,if,repeat,switch,try,english,eraser,field,fifth,file,finally,first,for,forever,fourth,from,front,ftp,gray,home,http,https,in,int1,int2,int4,integer,internet,intersect,into,inverse,it,italic,item,items,last,line,lines,link,long,LPT1:,magnifier,marked,maximize,me,menu,menuItem,message box,middle,milliseconds,minimize,modem:,msg,next,ninth,normal,numeric,of,onto,opaque,option,oval,paint,paragraph,paragraphs,pencil,plain,player,point,pointer,polygon,popup,previous,printer:,private,pulldown,real4,real8,recent,rectangle,regular,relative,resfile,roundRect,scrollbar,second,seconds,segment,segments,select,selection,sentence,sentences,seventh,shadow,short,sixth,spray can,standard,stderr,stdin,stdout,strikeout,string,surround,system,tabbed,target,templateAudioClip,templateButton,templateCard,templateEPS,templateField,templateGraphic,templateGroup,templateImage,templatePlayer,templateScrollbar,templateStack,templateVideoClip,tenth,text,the,then,third,this,threeDBox,ticks,title,to,token,top,trueWord,trueWords,uInt1,uInt2,uInt4,underline,until,URL,using,while,white,whole,with,without,word,words"
+constant kKeywords = "=,-,+,*,/,and,or,abbreviated,after,any,array,as,ascending,at,back,before,binfile,black,bold,box,break,browse,brush,bucket,button,by,byte,bytes,card,cascade,case,catch,character,characters,codepoint,codepoints,codeunit,codeunits,colorPalette,comboBox,COMn:,control,curve,dateItems,dateTime,default,descending,dropper,each,effective,eighth,element,else,end,if,repeat,switch,try,english,eraser,field,fifth,file,finally,first,for,forever,fourth,from,front,ftp,gray,home,http,https,in,int1,int2,int4,integer,internet,intersect,into,inverse,it,italic,item,items,last,line,lines,link,long,LPT1:,magnifier,marked,maximize,me,menu,menuItem,message box,middle,milliseconds,minimize,modem:,msg,next,ninth,normal,numeric,of,onto,opaque,option,oval,paint,paragraph,paragraphs,pencil,plain,player,point,pointer,polygon,popup,previous,printer:,private,pulldown,real4,real8,recent,rectangle,regular,relative,resfile,roundRect,scrollbar,second,seconds,segment,segments,select,selection,sentence,sentences,seventh,shadow,short,sixth,spray can,standard,stderr,stdin,stdout,strikeout,string,surround,system,tabbed,target,templateAudioClip,templateButton,templateCard,templateEPS,templateField,templateGraphic,templateGroup,templateImage,templatePlayer,templateScrollbar,templateStack,templateVideoClip,tenth,text,the,then,third,this,threeDBox,ticks,title,to,token,top,trueWord,trueWords,uInt1,uInt2,uInt4,underline,until,URL,using,while,white,whole,with,without,word,words"
 constant kSpaces = "                                                                                                    ", kTabs = "																																																																																																				"
 
 local sKeywords
@@ -204,14 +204,6 @@ private function _itemClearExtraSpaces pLine, @pCommentML
 				put tToken & space after tResult
 				break
 
-			case "^"
-				if last char of tResult is space then
-					delete last char of tResult
-				end if
-
-				put tToken after tResult
-				break
-
 			case "@"
 				put tToken after tResult
 				break
@@ -282,6 +274,7 @@ private command _replaceInputTokens @pLine
 	if "/*" is in pLine then replace "/*" with " U002FU0A4 " in pLine
 	if "\" is in pLine then replace "\" with " U005C " in pLine
 end _replaceInputTokens
+
 
 
 private function _replaceOutputTokens pLine
@@ -445,7 +438,6 @@ private command _indentation pLine, @pFormatArray
 
 			break
 
-
 		case tIsHeThen and sOpenIF > 0
 			add 1 to pFormatArray["num-indent"]
 			put "if" into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
@@ -467,7 +459,6 @@ private command _indentation pLine, @pFormatArray
 			break
 	end switch
 end _indentation
-
 
 private function _isHeThen pString, pWord, @pContinueInOtherLine
 	local tComment = 10001, tTem
@@ -500,6 +491,7 @@ private function _isHeThen pString, pWord, @pContinueInOtherLine
 end _isHeThen
 
 
+
 private command _openCommentML pLine, @pFormatArray
 	local tLastWord, tSkipRepeat = false, i = 0
 
@@ -525,6 +517,7 @@ private command _openCommentML pLine, @pFormatArray
 end _openCommentML
 
 
+
 private function _inString @pLine
 	local tNewline, tOffSet = 1, tOldOffSet = 0, tResult = false
 	set the itemdel to quote
@@ -541,4 +534,5 @@ private function _inString @pLine
 
 	return tResult
 end _inString
+
 
