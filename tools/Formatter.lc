@@ -31,7 +31,7 @@ command FormatScript
 	local tErrors
 	switch tScope
 		case ".source.livecodescript"
-			put textFormatAsScript(tScript, 1, true, false, true) into tScript
+			put textFormatAsScript(tScript, 1, true, false, false) into tScript
 			if tFirstline is not empty then put tFirstline into the first line of tScript
 			write tScript to stdout
 			break
