@@ -31,7 +31,7 @@ command FormatScript
 	local tErrors
 	switch tScope
 		case ".source.livecodescript"
-			put textFormatAsScript(tScript, 1, true, false, false) into tScript
+			put textFormatAsScript(tScript, 1, true, false, true) into tScript
 			if tFirstline is not empty then put tFirstline into the first line of tScript
 			write tScript to stdout
 			break
@@ -123,11 +123,10 @@ end textFormatAsScript
 
 
 private function _lineClearExtraSpaces pLine, @pCommentML
-	local tLastWord, tSkipRepeat = false
+	local tLastWord, tSkipRepeat = false, tCommentSL= false, x = 0
 
 	set the itemdel to quote
 
-	local x = 0
 	repeat for each item tItem in pLine
 		add 1 to x
 
@@ -137,8 +136,8 @@ private function _lineClearExtraSpaces pLine, @pCommentML
 			next repeat
 		end if
 
-
-		put _itemClearExtraSpaces(tItem, pCommentML) into tItem
+		put _itemClearExtraSpaces(tItem, pCommentML, tCommentSL) into tItem
+		if tCommentSL then return pLine
 		put last word of tItem into tLastWord
 
 		if (tLastWord) is among the words of kObjects then
@@ -158,7 +157,7 @@ private function _lineClearExtraSpaces pLine, @pCommentML
 end _lineClearExtraSpaces
 
 
-private function _itemClearExtraSpaces pLine, @pCommentML
+private function _itemClearExtraSpaces pLine, @pCommentML, @pCommentSL
 	local tPrevToken, tResult, tTokenNum = 0
 
 	_replaceInputTokens pLine, true
@@ -172,12 +171,10 @@ private function _itemClearExtraSpaces pLine, @pCommentML
 			case "U002DU002D"
 			case "U0023"
 			case "U002FU002F"
-				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) after tResult
-				exit repeat
-				break
-
+				## Error / ??
 			case "U005C"
-				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) after tResult
+				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) & space after tResult
+				put true into pCommentSL
 				exit repeat
 				break
 
