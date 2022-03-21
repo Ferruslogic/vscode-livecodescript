@@ -53,7 +53,7 @@ end __GetPreference
 
 -------------------------------------- linters -----------------------------------
 ----------------------------------------------------------------------------------
-constant kObjects = "graphic grc image img button btn scrollbar player field fld card cd EPS group widget control stack window wd", kInputTokens = "U003B,U002DU002D,U0023,U002FU002F,U002FU0A4,U005C", kOutputTokens = ";,--,#,//,/*,\"
+constant kInputTokens = "U003B,U002DU002D,U0023,U002FU002F,U002FU0A4,U005C", kOutputTokens = ";,--,#,//,/*,\"
 constant kKeywords = "=,-,+,*,/,and,or,abbreviated,after,any,array,as,ascending,at,back,before,binfile,black,bold,box,break,browse,brush,bucket,button,by,byte,bytes,card,cascade,case,catch,character,characters,codepoint,codepoints,codeunit,codeunits,colorPalette,comboBox,COMn:,control,curve,dateItems,dateTime,default,descending,dropper,each,effective,eighth,element,else,end,if,repeat,switch,try,english,eraser,field,fifth,file,finally,first,for,forever,fourth,from,front,ftp,gray,home,http,https,in,int1,int2,int4,integer,internet,intersect,into,inverse,it,italic,item,items,last,line,lines,link,long,LPT1:,magnifier,marked,maximize,me,menu,menuItem,message box,middle,milliseconds,minimize,modem:,msg,next,ninth,normal,numeric,of,onto,opaque,option,oval,paint,paragraph,paragraphs,pencil,plain,player,point,pointer,polygon,popup,previous,printer:,private,pulldown,real4,real8,recent,rectangle,regular,relative,resfile,roundRect,scrollbar,second,seconds,segment,segments,select,selection,sentence,sentences,seventh,shadow,short,sixth,spray can,standard,stderr,stdin,stdout,strikeout,string,surround,system,tabbed,target,templateAudioClip,templateButton,templateCard,templateEPS,templateField,templateGraphic,templateGroup,templateImage,templatePlayer,templateScrollbar,templateStack,templateVideoClip,tenth,text,the,then,third,this,threeDBox,ticks,title,to,token,top,trueWord,trueWords,uInt1,uInt2,uInt4,underline,until,URL,using,while,white,whole,with,without,word,words"
 constant kSpaces = "                                                                                                    ", kTabs = "																																																																																																				"
 
@@ -139,10 +139,6 @@ private function _lineClearExtraSpaces pLine, @pCommentML
 		put _itemClearExtraSpaces(tItem, pCommentML, tCommentSL) into tItem
 		if tCommentSL then return pLine
 		put last word of tItem into tLastWord
-
-		if (tLastWord) is among the words of kObjects then
-			delete last char of tItem
-		end if
 
 		if char 1 of tItem is not in ",;])" then
 			put space & tItem into tItem
