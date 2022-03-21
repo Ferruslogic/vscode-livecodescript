@@ -31,7 +31,7 @@ command FormatScript
 	local tErrors
 	switch tScope
 		case ".source.livecodescript"
-			put textFormatAsScript(tScript, 1, true, false, true) into tScript
+			put textFormatAsScript(tScript, 3, false, false, true) into tScript
 			if tFirstline is not empty then put tFirstline into the first line of tScript
 			write tScript to stdout
 			break
@@ -53,7 +53,7 @@ end __GetPreference
 
 -------------------------------------- linters -----------------------------------
 ----------------------------------------------------------------------------------
-constant kInputTokens = "U003B,U002DU002D,U0023,U002FU002F,U002FU0A4,U005C", kOutputTokens = ";,--,#,//,/*,\"
+constant kObjects = "graphic grc image img button btn scrollbar player field fld card cd EPS group widget control stack window wd", kInputTokens = "U003B,U002DU002D,U0023,U002FU002F,U002FU0A4,U005C", kOutputTokens = ";,--,#,//,/*,\"
 constant kKeywords = "=,-,+,*,/,and,or,abbreviated,after,any,array,as,ascending,at,back,before,binfile,black,bold,box,break,browse,brush,bucket,button,by,byte,bytes,card,cascade,case,catch,character,characters,codepoint,codepoints,codeunit,codeunits,colorPalette,comboBox,COMn:,control,curve,dateItems,dateTime,default,descending,dropper,each,effective,eighth,element,else,end,if,repeat,switch,try,english,eraser,field,fifth,file,finally,first,for,forever,fourth,from,front,ftp,gray,home,http,https,in,int1,int2,int4,integer,internet,intersect,into,inverse,it,italic,item,items,last,line,lines,link,long,LPT1:,magnifier,marked,maximize,me,menu,menuItem,message box,middle,milliseconds,minimize,modem:,msg,next,ninth,normal,numeric,of,onto,opaque,option,oval,paint,paragraph,paragraphs,pencil,plain,player,point,pointer,polygon,popup,previous,printer:,private,pulldown,real4,real8,recent,rectangle,regular,relative,resfile,roundRect,scrollbar,second,seconds,segment,segments,select,selection,sentence,sentences,seventh,shadow,short,sixth,spray can,standard,stderr,stdin,stdout,strikeout,string,surround,system,tabbed,target,templateAudioClip,templateButton,templateCard,templateEPS,templateField,templateGraphic,templateGroup,templateImage,templatePlayer,templateScrollbar,templateStack,templateVideoClip,tenth,text,the,then,third,this,threeDBox,ticks,title,to,token,top,trueWord,trueWords,uInt1,uInt2,uInt4,underline,until,URL,using,while,white,whole,with,without,word,words"
 constant kSpaces = "                                                                                                    ", kTabs = "																																																																																																				"
 
@@ -80,6 +80,7 @@ function textFormatAsScript pScript, pIndentation, pUseTabs, pMarginInBlankLines
 	put 0 into tFormatArray["num-indent"]
 	put false into tFormatArray["breakpoint"]
 	put char 1 to (tFormatArray["indentation"] * 2) of tFormatArray["indentation-chars"] into tFormatArray["other-line-space"]
+	put char 1 to trunc(tFormatArray["indentation"] / 2) of tFormatArray["indentation-chars"] into tFormatArray["else-space"]
 	put false into tFormatArray["continue-in-other-line"]
 	put false into tFormatArray["other-line"]
 	put pMarginInBlankLines is true into tFormatArray["margin-in-blank-lines"]
@@ -123,7 +124,7 @@ end textFormatAsScript
 
 
 private function _lineClearExtraSpaces pLine, @pCommentML
-	local tLastWord, tSkipRepeat = false, tCommentSL= false, x = 0
+	local tLastWord, tSkipRepeat = false, tCommentSL = false, x = 0
 
 	set the itemdel to quote
 
@@ -139,6 +140,10 @@ private function _lineClearExtraSpaces pLine, @pCommentML
 		put _itemClearExtraSpaces(tItem, pCommentML, tCommentSL) into tItem
 		if tCommentSL then return pLine
 		put last word of tItem into tLastWord
+
+		/*if (tLastWord) is among the words of kObjects then
+		delete last char of tItem
+		end if*/
 
 		if char 1 of tItem is not in ",;])" then
 			put space & tItem into tItem
@@ -423,6 +428,7 @@ private command _indentation pLine, @pFormatArray
 		case tFirstWord is "else" and the last item of pFormatArray["handler-indentation"] is "if"
 			put token 1 of the word 2 of pLine into tHandlerName
 			delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
+			put pFormatArray["else-space"] after pFormatArray["tabs"]
 
 			if tHandlerName is not empty and tHandlerName is not "if" then
 				subtract 1 from pFormatArray["num-indent"]
