@@ -4,8 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+# [1.1.7] - 2022-03-22
 
-# [1.1.6] - 2022-02-14
+### Fixed
+- [LCS] The formatter now formats correctly livecode code
+
+
+### Changed
+- [LCS] The formatter now adds 1 ident level to de "else"
+
+
+
+
+## [1.1.6] - 2022-02-14
 
 ### Fixed
 - [LCS] Fixed incorrect outlines for block comments

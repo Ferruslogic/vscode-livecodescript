@@ -9,7 +9,7 @@ FormatScript
 command FormatScript
 	local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
 	local tIndex
-   local tFirstline
+	local tFirstline
 
 	repeat for each element theArgument in the commandArguments
 
@@ -25,14 +25,14 @@ command FormatScript
 	local tScript
 	put it into tScript
 
-   //preserve first line for script files
-   if the first line of tScript begins with "<?" then put the first line of tScript into tFirstline
+	//preserve first line for script files
+	if the first line of tScript begins with "<?" then put the first line of tScript into tFirstline
 
 	local tErrors
 	switch tScope
 		case ".source.livecodescript"
-         put  textFormatAsScript(tScript, 1, true, false, true) into tScript
-          if tFirstline is not empty then put tFirstline into the first line of tScript
+			put textFormatAsScript(tScript, 3, false, false, true) into tScript
+			if tFirstline is not empty then put tFirstline into the first line of tScript
 			write tScript to stdout
 			break
 		case ".source.iRev"
@@ -51,10 +51,10 @@ private function __GetPreference pPreference, pDefault
 end __GetPreference
 
 
-
+-------------------------------------- linters -----------------------------------
 ----------------------------------------------------------------------------------
 constant kObjects = "graphic grc image img button btn scrollbar player field fld card cd EPS group widget control stack window wd", kInputTokens = "U003B,U002DU002D,U0023,U002FU002F,U002FU0A4,U005C", kOutputTokens = ";,--,#,//,/*,\"
-constant kKeywords = "and,or,abbreviated,after,any,array,as,ascending,at,back,before,binfile,black,bold,box,break,browse,brush,bucket,button,by,byte,bytes,card,cascade,case,catch,character,characters,codepoint,codepoints,codeunit,codeunits,colorPalette,comboBox,COMn:,control,curve,dateItems,dateTime,default,descending,dropper,each,effective,eighth,element,else,end,if,repeat,switch,try,english,eraser,field,fifth,file,finally,first,for,forever,fourth,from,front,ftp,gray,home,http,https,in,int1,int2,int4,integer,internet,intersect,into,inverse,it,italic,item,items,last,line,lines,link,long,LPT1:,magnifier,marked,maximize,me,menu,menuItem,message box,middle,milliseconds,minimize,modem:,msg,next,ninth,normal,numeric,of,onto,opaque,option,oval,paint,paragraph,paragraphs,pencil,plain,player,point,pointer,polygon,popup,previous,printer:,private,pulldown,real4,real8,recent,rectangle,regular,relative,resfile,roundRect,scrollbar,second,seconds,segment,segments,select,selection,sentence,sentences,seventh,shadow,short,sixth,spray can,standard,stderr,stdin,stdout,strikeout,string,surround,system,tabbed,target,templateAudioClip,templateButton,templateCard,templateEPS,templateField,templateGraphic,templateGroup,templateImage,templatePlayer,templateScrollbar,templateStack,templateVideoClip,tenth,text,the,then,third,this,threeDBox,ticks,title,to,token,top,trueWord,trueWords,uInt1,uInt2,uInt4,underline,until,URL,using,while,white,whole,with,without,word,words"
+constant kKeywords = "=,-,+,*,/,and,or,abbreviated,after,any,array,as,ascending,at,back,before,binfile,black,bold,box,break,browse,brush,bucket,button,by,byte,bytes,card,cascade,case,catch,character,characters,codepoint,codepoints,codeunit,codeunits,colorPalette,comboBox,COMn:,control,curve,dateItems,dateTime,default,descending,dropper,each,effective,eighth,element,else,end,if,repeat,switch,try,english,eraser,field,fifth,file,finally,first,for,forever,fourth,from,front,ftp,gray,home,http,https,in,int1,int2,int4,integer,internet,intersect,into,inverse,it,italic,item,items,last,line,lines,link,long,LPT1:,magnifier,marked,maximize,me,menu,menuItem,message box,middle,milliseconds,minimize,modem:,msg,next,ninth,normal,numeric,of,onto,opaque,option,oval,paint,paragraph,paragraphs,pencil,plain,player,point,pointer,polygon,popup,previous,printer:,private,pulldown,real4,real8,recent,rectangle,regular,relative,resfile,roundRect,scrollbar,second,seconds,segment,segments,select,selection,sentence,sentences,seventh,shadow,short,sixth,spray can,standard,stderr,stdin,stdout,strikeout,string,surround,system,tabbed,target,templateAudioClip,templateButton,templateCard,templateEPS,templateField,templateGraphic,templateGroup,templateImage,templatePlayer,templateScrollbar,templateStack,templateVideoClip,tenth,text,the,then,third,this,threeDBox,ticks,title,to,token,top,trueWord,trueWords,uInt1,uInt2,uInt4,underline,until,URL,using,while,white,whole,with,without,word,words"
 constant kSpaces = "                                                                                                    ", kTabs = "																																																																																																				"
 
 local sKeywords
@@ -80,6 +80,7 @@ function textFormatAsScript pScript, pIndentation, pUseTabs, pMarginInBlankLines
 	put 0 into tFormatArray["num-indent"]
 	put false into tFormatArray["breakpoint"]
 	put char 1 to (tFormatArray["indentation"] * 2) of tFormatArray["indentation-chars"] into tFormatArray["other-line-space"]
+	put char 1 to trunc(tFormatArray["indentation"] / 2) of tFormatArray["indentation-chars"] into tFormatArray["else-space"]
 	put false into tFormatArray["continue-in-other-line"]
 	put false into tFormatArray["other-line"]
 	put pMarginInBlankLines is true into tFormatArray["margin-in-blank-lines"]
@@ -123,11 +124,10 @@ end textFormatAsScript
 
 
 private function _lineClearExtraSpaces pLine, @pCommentML
-	local tLastWord, tSkipRepeat = false
+	local tLastWord, tSkipRepeat = false, tCommentSL = false, x = 0
 
 	set the itemdel to quote
 
-	local x = 0
 	repeat for each item tItem in pLine
 		add 1 to x
 
@@ -137,13 +137,13 @@ private function _lineClearExtraSpaces pLine, @pCommentML
 			next repeat
 		end if
 
-
-		put _itemClearExtraSpaces(tItem, pCommentML) into tItem
+		put _itemClearExtraSpaces(tItem, pCommentML, tCommentSL) into tItem
+		if tCommentSL then return pLine
 		put last word of tItem into tLastWord
 
-		if (tLastWord) is among the words of kObjects then
-			delete last char of tItem
-		end if
+		/*if (tLastWord) is among the words of kObjects then
+		delete last char of tItem
+		end if*/
 
 		if char 1 of tItem is not in ",;])" then
 			put space & tItem into tItem
@@ -158,7 +158,7 @@ private function _lineClearExtraSpaces pLine, @pCommentML
 end _lineClearExtraSpaces
 
 
-private function _itemClearExtraSpaces pLine, @pCommentML
+private function _itemClearExtraSpaces pLine, @pCommentML, @pCommentSL
 	local tPrevToken, tResult, tTokenNum = 0
 
 	_replaceInputTokens pLine, true
@@ -172,12 +172,10 @@ private function _itemClearExtraSpaces pLine, @pCommentML
 			case "U002DU002D"
 			case "U0023"
 			case "U002FU002F"
-				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) after tResult
-				exit repeat
-				break
-
+				## Error / ??
 			case "U005C"
-				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) after tResult
+				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) & space after tResult
+				put true into pCommentSL
 				exit repeat
 				break
 
@@ -202,14 +200,6 @@ private function _itemClearExtraSpaces pLine, @pCommentML
 				end if
 
 				put tToken & space after tResult
-				break
-
-			case "^"
-				if last char of tResult is space then
-					delete last char of tResult
-				end if
-
-				put tToken after tResult
 				break
 
 			case "@"
@@ -282,6 +272,7 @@ private command _replaceInputTokens @pLine
 	if "/*" is in pLine then replace "/*" with " U002FU0A4 " in pLine
 	if "\" is in pLine then replace "\" with " U005C " in pLine
 end _replaceInputTokens
+
 
 
 private function _replaceOutputTokens pLine
@@ -437,6 +428,7 @@ private command _indentation pLine, @pFormatArray
 		case tFirstWord is "else" and the last item of pFormatArray["handler-indentation"] is "if"
 			put token 1 of the word 2 of pLine into tHandlerName
 			delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
+			put pFormatArray["else-space"] after pFormatArray["tabs"]
 
 			if tHandlerName is not empty and tHandlerName is not "if" then
 				subtract 1 from pFormatArray["num-indent"]
@@ -444,7 +436,6 @@ private command _indentation pLine, @pFormatArray
 			end if
 
 			break
-
 
 		case tIsHeThen and sOpenIF > 0
 			add 1 to pFormatArray["num-indent"]
@@ -467,7 +458,6 @@ private command _indentation pLine, @pFormatArray
 			break
 	end switch
 end _indentation
-
 
 private function _isHeThen pString, pWord, @pContinueInOtherLine
 	local tComment = 10001, tTem
@@ -500,6 +490,7 @@ private function _isHeThen pString, pWord, @pContinueInOtherLine
 end _isHeThen
 
 
+
 private command _openCommentML pLine, @pFormatArray
 	local tLastWord, tSkipRepeat = false, i = 0
 
@@ -525,6 +516,7 @@ private command _openCommentML pLine, @pFormatArray
 end _openCommentML
 
 
+
 private function _inString @pLine
 	local tNewline, tOffSet = 1, tOldOffSet = 0, tResult = false
 	set the itemdel to quote
@@ -541,4 +533,5 @@ private function _inString @pLine
 
 	return tResult
 end _inString
+
 
