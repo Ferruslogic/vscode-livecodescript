@@ -7,47 +7,47 @@ local sTempFile
 FormatScript
 
 command FormatScript
-	local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
-	local tIndex
-	local tFirstline
+   local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
+   local tIndex
+   local tFirstline
 
-	repeat for each element theArgument in the commandArguments
+   repeat for each element theArgument in the commandArguments
 
-		split theArgument with "="
-		switch theArgument[1]
-			case "-scope"
-				put theArgument[2] into tScope
-				break
-		end switch
-	end repeat
+      split theArgument with "="
+      switch theArgument[1]
+         case "-scope"
+            put theArgument[2] into tScope
+            break
+      end switch
+   end repeat
 
-	read from stdin until empty
-	local tScript
-	put it into tScript
+   read from stdin until empty
+   local tScript
+   put it into tScript
 
-	//preserve first line for script files
-	if the first line of tScript begins with "<?" then put the first line of tScript into tFirstline
+   //preserve first line for script files
+   if the first line of tScript begins with "<?" then put the first line of tScript into tFirstline
 
-	local tErrors
-	switch tScope
-		case ".source.livecodescript"
-			put textFormatAsScript(tScript, 3, false, false, true) into tScript
-			if tFirstline is not empty then put tFirstline into the first line of tScript
-			write tScript to stdout
-			break
-		case ".source.iRev"
+   local tErrors
+   switch tScope
+      case ".source.livecodescript"
+         put textFormatAsScript(tScript, 3, false, false, true) into tScript
+         if tFirstline is not empty then put tFirstline into the first line of tScript
+         write tScript to stdout
+         break
+      case ".source.iRev"
 
-			break
-		case ".source.lcb"
-			write (tScript) & linefeed to stdout
-			break
-	end switch
+         break
+      case ".source.lcb"
+         write (tScript) & linefeed to stdout
+         break
+   end switch
 
 end FormatScript
 
 private function __GetPreference pPreference, pDefault
-	if pPreference is "editor,tabdepth" then return 3
-	return pDefault
+   if pPreference is "editor,tabdepth" then return 3
+   return pDefault
 end __GetPreference
 
 
@@ -61,477 +61,473 @@ local sKeywords
 
 # Clean the script of extra spaces
 function textFormatAsScript pScript, pIndentation, pUseTabs, pMarginInBlankLines, pPretty
-	local tNewScript, tFormatArray, tCommentML = false
+   local tNewScript, tFormatArray, tCommentML = false
 
-	if first word of pScript is empty then return empty
+   if first word of pScript is empty then return empty
 
-	# words to which the ( cannot be glued.
-	_loadKeyWords
+   # words to which the ( cannot be glued.
+   _loadKeyWords
 
-	if pIndentation is not an integer or pIndentation < 1 then put 2 into tFormatArray["indentation"]
-	else put pIndentation into tFormatArray["indentation"]
+   if pIndentation is not an integer or pIndentation < 1 then put 2 into tFormatArray["indentation"]
+   else put pIndentation into tFormatArray["indentation"]
 
-	if not pUseTabs then put kSpaces into tFormatArray["indentation-chars"]
-	else put kTabs into tFormatArray["indentation-chars"]
+   if not pUseTabs then put kSpaces into tFormatArray["indentation-chars"]
+   else put kTabs into tFormatArray["indentation-chars"]
 
-	put "" into tFormatArray["tabs"]
-	put false into tFormatArray["comment-ml"]
-	put empty into tFormatArray["handler-indentation"]
-	put 0 into tFormatArray["num-indent"]
-	put false into tFormatArray["breakpoint"]
-	put char 1 to (tFormatArray["indentation"] * 2) of tFormatArray["indentation-chars"] into tFormatArray["other-line-space"]
-	put char 1 to trunc(tFormatArray["indentation"] / 2) of tFormatArray["indentation-chars"] into tFormatArray["else-space"]
-	put false into tFormatArray["continue-in-other-line"]
-	put false into tFormatArray["other-line"]
-	put pMarginInBlankLines is true into tFormatArray["margin-in-blank-lines"]
+   put "" into tFormatArray["tabs"]
+   put false into tFormatArray["comment-ml"]
+   put empty into tFormatArray["handler-indentation"]
+   put 0 into tFormatArray["num-indent"]
+   put false into tFormatArray["breakpoint"]
+   put char 1 to (tFormatArray["indentation"] * 2) of tFormatArray["indentation-chars"] into tFormatArray["other-line-space"]
+   put char 1 to trunc(tFormatArray["indentation"] / 2) of tFormatArray["indentation-chars"] into tFormatArray["else-space"]
+   put false into tFormatArray["continue-in-other-line"]
+   put false into tFormatArray["other-line"]
+   put pMarginInBlankLines is true into tFormatArray["margin-in-blank-lines"]
 
-	put replaceText(pScript, "(?mi)^[ \t]+|[ \t]+$", "") into pScript
+   put replaceText(pScript, "(?mi)^[ \t]+|[ \t]+$", "") into pScript
 
-	repeat for each line tline in pScript
-		if tline is empty then
-			if tFormatArray["margin-in-blank-lines"]  then
-				put tFormatArray["tabs"]  & cr after tNewScript
-			else
-				put cr after tNewScript
-			end if
-			next repeat
-		end if
+   repeat for each line tline in pScript
+      if tline is empty then
+         if tFormatArray["margin-in-blank-lines"] then
+            put tFormatArray["tabs"] & cr after tNewScript
+          else
+            put cr after tNewScript
+         end if
+         next repeat
+      end if
 
-		if pPretty then
-			if not tCommentML then
-				put _lineClearExtraSpaces(tLine, tCommentML) into tLine
-			else
-				put _comments(tLine, tCommentML) into tLine
-			end if
+      if pPretty then
+         if not tCommentML then
+            put _lineClearExtraSpaces(tLine, tCommentML) into tLine
+          else
+            put _comments(tLine, tCommentML) into tLine
+         end if
 
-			if last char of tLine is space then
-				delete last char of tLine
-			end if
-		end if
+         if last char of tLine is space then
+            delete last char of tLine
+         end if
+      end if
 
-		_indentation tLine, tFormatArray
+      _indentation tLine, tFormatArray
 
-		if tFormatArray["continue-in-other-line"] then
-			put tFormatArray["other-line-space"] after tFormatArray["tabs"]
-		end if
+      if tFormatArray["continue-in-other-line"] then
+         put tFormatArray["other-line-space"] after tFormatArray["tabs"]
+      end if
 
-		put tFormatArray["other-line"] into tFormatArray["continue-in-other-line"]
-		put tFormatArray["tabs"] & tLine & cr after tNewScript
-	end repeat
+      put tFormatArray["other-line"] into tFormatArray["continue-in-other-line"]
+      put tFormatArray["tabs"] & tLine & cr after tNewScript
+   end repeat
 
-	return tNewScript
+   return tNewScript
 end textFormatAsScript
 
 
 private function _lineClearExtraSpaces pLine, @pCommentML
-	local tLastWord, tSkipRepeat = false, tCommentSL = false, x = 0
+   local tLastWord, tSkipRepeat = false, tCommentSL = false, x = 0
 
-	set the itemdel to quote
+   set the itemdel to quote
 
-	repeat for each item tItem in pLine
-		add 1 to x
+   repeat for each item tItem in pLine
+      add 1 to x
 
-		if tSkipRepeat then
-			put tItem ends with "\"  into tSkipRepeat
-			put true into tSkipRepeat
-			next repeat
-		end if
+      if tSkipRepeat then
+         put false into tSkipRepeat
+         next repeat
+      end if
 
-		put _itemClearExtraSpaces(tItem, pCommentML, tCommentSL) into tItem
-		if tCommentSL then return pLine
-		put last word of tItem into tLastWord
+      put _itemClearExtraSpaces(tItem, pCommentML, tCommentSL) into tItem
+      if tCommentSL then return pLine
+      put last word of tItem into tLastWord
 
-		/*if (tLastWord) is among the words of kObjects then
-		delete last char of tItem
-		end if*/
+      if char 1 of tItem is not in ",;])" then
+         put space & tItem into tItem
+      end if
 
-		if char 1 of tItem is not in ",;])" then
-			put space & tItem into tItem
-		end if
+      put tItem into item x of pLine
+      put true into tSkipRepeat
+   end repeat
 
-		put tItem into item x of pLine
-		put true into tSkipRepeat
-	end repeat
-
-	if first char of pLine is space then delete first char of pLine
-	return pLine
+   if first char of pLine is space then delete first char of pLine
+   return pLine
 end _lineClearExtraSpaces
 
 
 private function _itemClearExtraSpaces pLine, @pCommentML, @pCommentSL
-	local tPrevToken, tResult, tTokenNum = 0
+   local tPrevToken, tResult, tTokenNum = 0
 
-	_replaceInputTokens pLine, true
+   _replaceInputTokens pLine, true
 
-	repeat for each token tToken in pLine
-		add 1 to tTokenNum
+   repeat for each token tToken in pLine
+      add 1 to tTokenNum
 
-		switch tToken
+      switch tToken
 
-			### Comments on a line ###
-			case "U002DU002D"
-			case "U0023"
-			case "U002FU002F"
-				## Error / ??
-			case "U005C"
-				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) & space after tResult
-				put true into pCommentSL
-				exit repeat
-				break
+         ### Comments on a line ###
+         case "U002DU002D"
+         case "U0023"
+         case "U002FU002F"
+            ## Error / ??
+         case "U005C"
+            put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) & space after tResult
+            put true into pCommentSL
+            exit repeat
+            break
 
-			### Multiline comment opening ###
-			case "U002FU0A4"
-				put true into pCommentML
-				put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) after tResult
-				exit repeat
-				break
+         ### Multiline comment opening ###
+         case "U002FU0A4"
+            put true into pCommentML
+            put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) after tResult
+            exit repeat
+            break
 
-			case "U003B"
-				if last char of tResult is space then
-					delete last char of tResult
-				end if
+         case "U003B"
+            if last char of tResult is space then
+               delete last char of tResult
+            end if
 
-				put ";" & space after tResult
-				break
+            put ";" & space after tResult
+            break
 
-			case "-"
-				if (tPrevToken is "U002DU002D" or tPrevToken is "") and last char of tResult is space then
-					delete last char of tResult
-				end if
+         case "-"
+            if (tPrevToken is "U002DU002D" or tPrevToken is "") and last char of tResult is space then
+               delete last char of tResult
+            end if
 
-				put tToken & space after tResult
-				break
+            put tToken & space after tResult
+            break
 
-			case "@"
-				put tToken after tResult
-				break
+         case "@"
+            put tToken after tResult
+            break
 
-			case "("; case "["
-				if _isHandler(tPrevToken) and last char of tResult is space then
-					delete last char of tResult
-				end if
-				put tToken after tResult
-				break
+         case "("; case "["
+            if _isHandler(tPrevToken) and last char of tResult is space then
+               delete last char of tResult
+            end if
+            put tToken after tResult
+            break
 
-			case ","; case ")"; case "]"
-				if last char of tResult is space then
-					delete last char of tResult
-				end if
-				put tToken & space after tResult
-				break
+         case ","; case ")"; case "]"
+            if last char of tResult is space then
+               delete last char of tResult
+            end if
+            put tToken & space after tResult
+            break
 
-			default
-				put tToken & space after tResult
-		end switch
+         default
+            put tToken & space after tResult
+      end switch
 
-		put tToken into tPrevToken
-	end repeat
+      put tToken into tPrevToken
+   end repeat
 
 
-	return tResult
+   return tResult
 end _itemClearExtraSpaces
 
 
 private function _comments pLine, @pCommentML
-	local tEndCML, tResult
+   local tEndCML, tResult
 
-	if pCommentML is true and "*/" is in pLine then
-		put offset("*/", pLine) + 1 into tEndCML
-		put the char 1 to tEndCML of pLine into tResult
+   if pCommentML is true and "*/" is in pLine then
+      put offset("*/", pLine) + 1 into tEndCML
+      put the char 1 to tEndCML of pLine into tResult
 
-		put false into pCommentML
-		add 1 to tEndCML
-		put space & _lineClearExtraSpaces(the char tEndCML to - 1 of pLine, pCommentML) after tResult
+      put false into pCommentML
+      add 1 to tEndCML
+      put space & _lineClearExtraSpaces(the char tEndCML to - 1 of pLine, pCommentML) after tResult
 
-		return tResult
-	end if
+      return tResult
+   end if
 
-	return pLine
+   return pLine
 end _comments
 
 
 private command _loadKeyWords
-	if sKeywords is empty then
-		put the commandNames into sKeywords
-		replace cr with comma in sKeywords
-		put comma & kKeywords after sKeywords
-	end if
+   if sKeywords is empty then
+      put the commandNames into sKeywords
+      replace cr with comma in sKeywords
+      put comma & kKeywords after sKeywords
+   end if
 end _loadKeyWords
 
 
 private function _isHandler pName
-	return pName is not among the items of sKeywords
+   return pName is not among the items of sKeywords
 end _isHandler
 
 
 private command _replaceInputTokens @pLine
-	if ";" is in pLine then replace ";" with " U003B " in pLine
-	if "--" is in pLine then replace "--" with " U002DU002D " in pLine
-	if "#" is in pLine then replace "#" with " U0023 " in pLine
-	if "//" is in pLine then replace "//" with " U002FU002F " in pLine
-	if "/*" is in pLine then replace "/*" with " U002FU0A4 " in pLine
-	if "\" is in pLine then replace "\" with " U005C " in pLine
+   if ";" is in pLine then replace ";" with " U003B " in pLine
+   if "--" is in pLine then replace "--" with " U002DU002D " in pLine
+   if "#" is in pLine then replace "#" with " U0023 " in pLine
+   if "//" is in pLine then replace "//" with " U002FU002F " in pLine
+   if "/*" is in pLine then replace "/*" with " U002FU0A4 " in pLine
+   if "\" is in pLine then replace "\" with " U005C " in pLine
 end _replaceInputTokens
 
 
 
 private function _replaceOutputTokens pLine
-	local tInputToken, tOutputToken
+   local tInputToken, tOutputToken
 
-	repeat with i = 1 to 6
-		put the item i of kInputTokens into tInputToken
-		put the item i of kOutputTokens into tOutputToken
+   repeat with i = 1 to 6
+      put the item i of kInputTokens into tInputToken
+      put the item i of kOutputTokens into tOutputToken
 
-		if tInputToken is in pLine then
-			replace space & tInputToken & space with tOutputToken in pLine
-			replace space & tInputToken with tOutputToken in pLine
-			replace tInputToken & space with tOutputToken in pLine
-			replace tInputToken with tOutputToken in pLine
-		end if
-	end repeat
+      if tInputToken is in pLine then
+         replace space & tInputToken & space with tOutputToken in pLine
+         replace space & tInputToken with tOutputToken in pLine
+         replace tInputToken & space with tOutputToken in pLine
+         replace tInputToken with tOutputToken in pLine
+      end if
+   end repeat
 
-	return pLine
+   return pLine
 end _replaceOutputTokens
 
 
 local sOpenIF = 0, sOpenML
 private command _indentation pLine, @pFormatArray
-	local tFirstWord, tHandlerName, tOffSetThen, tOffSetComment, tIsHeThen, tCloseCommentML
+   local tFirstWord, tHandlerName, tOffSetThen, tOffSetComment, tIsHeThen, tCloseCommentML
 
-	_openCommentML pLine, pFormatArray
+   _openCommentML pLine, pFormatArray
 
-	if ";" is in pLine and  _inString(pLine) then
+   if ";" is in pLine and _inString(pLine) then
 
-		repeat for each line i in pLine
-			_indentation i, pFormatArray
-		end repeat
+      repeat for each line i in pLine
+         _indentation i, pFormatArray
+      end repeat
 
-		exit _indentation
-	end if
+      exit _indentation
+   end if
 
-	# is the then and break the line
-	put _isHeThen(pLine, "then", pFormatArray["other-line"]) into tIsHeThen
+   # is the then and break the line
+   put _isHeThen(pLine, "then", pFormatArray["other-line"]) into tIsHeThen
 
-	if pFormatArray["num-indent"] <= 0 then
-		put 0 into pFormatArray["num-indent"]
-		put empty into pFormatArray["tabs"]
-	else put char 1 to (pFormatArray["indentation"] * pFormatArray["num-indent"]) of pFormatArray["indentation-chars"] into pFormatArray["tabs"]
+   if pFormatArray["num-indent"] <= 0 then
+      put 0 into pFormatArray["num-indent"]
+      put empty into pFormatArray["tabs"]
+    else put char 1 to (pFormatArray["indentation"] * pFormatArray["num-indent"]) of pFormatArray["indentation-chars"] into pFormatArray["tabs"]
 
-	# change the level of indentation
-	if pFormatArray["comment-ml"] then
-		put offset("*/", pLine) into tCloseCommentML
+   # change the level of indentation
+   if pFormatArray["comment-ml"] then
+      put offset("*/", pLine) into tCloseCommentML
 
-		if tCloseCommentML > 0 then
+      if tCloseCommentML > 0 then
 
-			add 1 to tCloseCommentML
-			delete char 0 to tCloseCommentML of pLine
+         add 1 to tCloseCommentML
+         delete char 0 to tCloseCommentML of pLine
 
-			put false into pFormatArray["comment-ml"]
-			_indentation pLine, pFormatArray
-			exit _indentation
+         put false into pFormatArray["comment-ml"]
+         _indentation pLine, pFormatArray
+         exit _indentation
 
-		else if not sOpenML then
-			put offset("/*", pLine ) into sOpenML
+       else if not sOpenML then
+         put offset("/*", pLine) into sOpenML
 
-			if sOpenML = 0 then
-				exit _indentation
-			end if
+         if sOpenML = 0 then
+            exit _indentation
+         end if
 
-			delete char sOpenML to - 1 of pLine
-			put true into sOpenML
-			put false into pFormatArray["comment-ml"]
-		else
+         delete char sOpenML to - 1 of pLine
+         put true into sOpenML
+         put false into pFormatArray["comment-ml"]
+       else
 
-			exit _indentation
-		end if
-	else
-		put false into sOpenML
-	end if
+         exit _indentation
+      end if
+    else
+      put false into sOpenML
+   end if
 
-	# work with script indentation
-	put first word of pLine into tFirstWord
+   # work with script indentation
+   put first word of pLine into tFirstWord
 
-	switch
-		# Opening of manipulators
-		case tFirstWord is among the words of "on command function getProp setProp after before"
-			put 1 into pFormatArray["num-indent"]
-			put token 1 of the word 2 of pLine into pFormatArray["handler-indentation"]
+   switch
+      # Opening of manipulators
+      case tFirstWord is among the words of "on command function getProp setProp after before"
+         put 1 into pFormatArray["num-indent"]
+         put token 1 of the word 2 of pLine into pFormatArray["handler-indentation"]
 
-			break
+         break
 
-		# Opening of private manipulators
-		case tFirstWord is "private"
-			put 1 into pFormatArray["num-indent"]
-			put the word 3 of pLine into pFormatArray["handler-indentation"]
-			break
+      # Opening of private manipulators
+      case tFirstWord is "private"
+         put 1 into pFormatArray["num-indent"]
+         put the word 3 of pLine into pFormatArray["handler-indentation"]
+         break
 
-		case tFirstWord is "if"
-			if tFirstWord is "if" and tIsHeThen then
-				add 1 to pFormatArray["num-indent"]
-				put tFirstWord into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
-			else if sOpenIF < 1 then
-				put 1 into sOpenIF
-			else
-				add 1 to sOpenIF
-			end if
-			break
-
-
-		case tFirstWord is among the words of "repeat try switch"
-			add 1 to pFormatArray["num-indent"]
-			put tFirstWord into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
-			break
-
-		case tFirstWord is among the words of "case default"
-			if item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] is no among the words of "case default" then
-				add 1 to pFormatArray["num-indent"]
-				put tFirstWord into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
-			else
-				delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
-			end if
-			break
-
-		# Close a manipulator or a structure
-		case tFirstWord is "end"
-			put token 1 of the word 2 of pLine into tHandlerName
+      case tFirstWord is "if"
+         if tFirstWord is "if" and tIsHeThen then
+            add 1 to pFormatArray["num-indent"]
+            put tFirstWord into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
+          else if sOpenIF < 1 then
+            put 1 into sOpenIF
+          else
+            add 1 to sOpenIF
+         end if
+         break
 
 
-			if tHandlerName is the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] then
-				if last item of pFormatArray["handler-indentation"] is "if" then
-					subtract 1 from sOpenIF
-				end if
+      case tFirstWord is among the words of "repeat try switch"
+         add 1 to pFormatArray["num-indent"]
+         put tFirstWord into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
+         break
 
-				subtract 1 from pFormatArray["num-indent"]
-				delete last item of pFormatArray["handler-indentation"]
-				delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
-			else if tHandlerName is "switch" and "switch" is in pFormatArray["handler-indentation"] then
-				get pFormatArray["num-indent"]
-				repeat for it
-					if the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] is among the words of "case default switch" then
-						subtract 1 from pFormatArray["num-indent"]
-						delete last item of pFormatArray["handler-indentation"]
-						delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
-					else
-						exit repeat
-					end if
-				end repeat
-			end if
-			break
+      case tFirstWord is among the words of "case default"
+         if item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] is no among the words of "case default" then
+            add 1 to pFormatArray["num-indent"]
+            put tFirstWord into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
+          else
+            delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
+         end if
+         break
 
-		case tFirstWord is "break"
-			if the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] is among the words of "case default switch" then
-				subtract 1 from pFormatArray["num-indent"]
-				delete last item of pFormatArray["handler-indentation"]
-			end if
-			break
-
-		case tFirstWord is "else" and the last item of pFormatArray["handler-indentation"] is "if"
-			put token 1 of the word 2 of pLine into tHandlerName
-			delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
-			put pFormatArray["else-space"] after pFormatArray["tabs"]
-
-			if tHandlerName is not empty and tHandlerName is not "if" then
-				subtract 1 from pFormatArray["num-indent"]
-				delete last item of pFormatArray["handler-indentation"]
-			end if
-
-			break
-
-		case tIsHeThen and sOpenIF > 0
-			add 1 to pFormatArray["num-indent"]
-			put "if" into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
-			break
+      # Close a manipulator or a structure
+      case tFirstWord is "end"
+         put token 1 of the word 2 of pLine into tHandlerName
 
 
-		case tFirstWord is among the words of "catch finally" and the last item of pFormatArray["handler-indentation"] is "try"
-			delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
-			break
+         if tHandlerName is the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] then
+            if last item of pFormatArray["handler-indentation"] is "if" then
+               subtract 1 from sOpenIF
+            end if
 
-		case sOpenIF is true and not tIsHeThen
-			put offset("\", pLine) is not 0 into sOpenIF
-			break
+            subtract 1 from pFormatArray["num-indent"]
+            delete last item of pFormatArray["handler-indentation"]
+            delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
+          else if tHandlerName is "switch" and "switch" is in pFormatArray["handler-indentation"] then
+            get pFormatArray["num-indent"]
+            repeat for it
+               if the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] is among the words of "case default switch" then
+                  subtract 1 from pFormatArray["num-indent"]
+                  delete last item of pFormatArray["handler-indentation"]
+                  delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
+                else
+                  exit repeat
+               end if
+            end repeat
+         end if
+         break
 
-		case tIsHeThen and sOpenIF
-			add 1 to pFormatArray["num-indent"]
-			put "if" into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
-			put false into sOpenIF
-			break
-	end switch
+      case tFirstWord is "break"
+         if the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"] is among the words of "case default switch" then
+            subtract 1 from pFormatArray["num-indent"]
+            delete last item of pFormatArray["handler-indentation"]
+         end if
+         break
+
+      case tFirstWord is "else" and the last item of pFormatArray["handler-indentation"] is "if"
+         put token 1 of the word 2 of pLine into tHandlerName
+         delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
+
+         if tHandlerName is not empty and tHandlerName is not "if" then
+            subtract 1 from pFormatArray["num-indent"]
+            delete last item of pFormatArray["handler-indentation"]
+          else
+            put pFormatArray["else-space"] after pFormatArray["tabs"]
+         end if
+
+         break
+
+      case tIsHeThen and sOpenIF > 0
+         add 1 to pFormatArray["num-indent"]
+         put "if" into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
+         break
+
+
+      case tFirstWord is among the words of "catch finally" and the last item of pFormatArray["handler-indentation"] is "try"
+         delete char - pFormatArray["indentation"] to - 1 of pFormatArray["tabs"]
+         break
+
+      case sOpenIF is true and not tIsHeThen
+         put offset("\", pLine) is not 0 into sOpenIF
+         break
+
+      case tIsHeThen and sOpenIF
+         add 1 to pFormatArray["num-indent"]
+         put "if" into the item pFormatArray["num-indent"] of pFormatArray["handler-indentation"]
+         put false into sOpenIF
+         break
+   end switch
 end _indentation
 
 private function _isHeThen pString, pWord, @pContinueInOtherLine
-	local tComment = 10001, tTem
-	put false into pContinueInOtherLine
-	set the itemdel to quote
+   local tComment = 10001, tTem
+   put false into pContinueInOtherLine
+   set the itemdel to quote
 
-	if pWord is not in pString and "\" then return false
-	put last item of pString into pString
+   if pWord is not in pString and "\" then return false
+   put last item of pString into pString
 
-	put offset("//", pString ) into tTem
-	if tTem > 0 then put tTem into tComment
+   put offset("//", pString) into tTem
+   if tTem > 0 then put tTem into tComment
 
-	put offset("/*", pString ) into tTem
-	if tTem > 0 and tTem < tComment then put tTem into tComment
+   put offset("/*", pString) into tTem
+   if tTem > 0 and tTem < tComment then put tTem into tComment
 
-	put offset("--", pString ) into tTem
-	if tTem > 0 and tTem < tComment then put tTem into tComment
+   put offset("--", pString) into tTem
+   if tTem > 0 and tTem < tComment then put tTem into tComment
 
-	put offset("#", pString ) into tTem
-	if tTem > 0 and tTem < tComment then put tTem into tComment
+   put offset("#", pString) into tTem
+   if tTem > 0 and tTem < tComment then put tTem into tComment
 
-	if tComment <> 10001 then delete char tComment to - 1 of pString
+   if tComment <> 10001 then delete char tComment to - 1 of pString
 
-	if last word of pString ends with "\"  and not(last word of pString ends with "*\" ) then
-		put true into pContinueInOtherLine
-		return last token of pString is pWord
-	end if
+   if last word of pString ends with "\" and not(last word of pString ends with "*\") then
+      put true into pContinueInOtherLine
+      return last token of pString is pWord
+   end if
 
-	return last word of pString is pWord
+   return last word of pString is pWord
 end _isHeThen
 
 
 
 private command _openCommentML pLine, @pFormatArray
-	local tLastWord, tSkipRepeat = false, i = 0
+   local tLastWord, tSkipRepeat = false, i = 0
 
-	if pFormatArray["comment-ml"] or "/*" is no in pLine then exit _openCommentML
-	replace "/*" with " /* " in pLine
-	set the itemdel to quote
+   if pFormatArray["comment-ml"] or "/*" is no in pLine then exit _openCommentML
+   replace "/*" with " /* " in pLine
+   set the itemdel to quote
 
-	repeat for each item tItem in pLine
-		add 1 to i
+   repeat for each item tItem in pLine
+      add 1 to i
 
-		if tSkipRepeat then
-			put tItem ends with "\" into tSkipRepeat
-			next repeat
-		end if
+      if tSkipRepeat then
+         put tItem ends with "\" into tSkipRepeat
+         next repeat
+      end if
 
-		if offset("/*", tItem ) > 0 then
-			put true into pFormatArray["comment-ml"]
-			exit repeat
-		end if
+      if offset("/*", tItem) > 0 then
+         put true into pFormatArray["comment-ml"]
+         exit repeat
+      end if
 
-		put true into tSkipRepeat
-	end repeat
+      put true into tSkipRepeat
+   end repeat
 end _openCommentML
 
 
 
 private function _inString @pLine
-	local tNewline, tOffSet = 1, tOldOffSet = 0, tResult = false
-	set the itemdel to quote
+   local tNewline, tOffSet = 1, tOldOffSet = 0, tResult = false
+   set the itemdel to quote
 
-	repeat while tOffSet <> 0
-		put offset(";", pLine, tOldOffSet) into tOffSet
-		add tOffSet to tOldOffSet
+   repeat while tOffSet <> 0
+      put offset(";", pLine, tOldOffSet) into tOffSet
+      add tOffSet to tOldOffSet
 
-		if the num of items of the char 1 to tOldOffSet of pLine mod 2 <> 0 then
-			put cr into the char tOldOffSet of pLine
-			put true into tResult
-		end if
-	end repeat
+      if the num of items of the char 1 to tOldOffSet of pLine mod 2 <> 0 then
+         put cr into the char tOldOffSet of pLine
+         put true into tResult
+      end if
+   end repeat
 
-	return tResult
+   return tResult
 end _inString
 
 
