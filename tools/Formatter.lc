@@ -50,7 +50,6 @@ private function __GetPreference pPreference, pDefault
    return pDefault
 end __GetPreference
 
-
 -------------------------------------- linters -----------------------------------
 ----------------------------------------------------------------------------------
 constant kObjects = "graphic grc image img button btn scrollbar player field fld card cd EPS group widget control stack window wd", kInputTokens = "U003B,U002DU002D,U0023,U002FU002F,U002FU0A4,U005C", kOutputTokens = ";,--,#,//,/*,\"
@@ -124,26 +123,40 @@ end textFormatAsScript
 
 
 private function _lineClearExtraSpaces pLine, @pCommentML
-   local tLastWord, tSkipRepeat = false, tCommentSL = false, x = 0
+   local tLastWord, tSkipRepeat = false, tCommentSL = false, x = 0, tPrevItem
 
    set the itemdel to quote
+   if "\" & quote is in pLine then replace "\" & quote with quote & "U005CU002" & quote in pLine
 
    repeat for each item tItem in pLine
       add 1 to x
+      if tItem is empty then
+         put not tSkipRepeat into tSkipRepeat
+         next repeat
+      end if
 
       if tSkipRepeat then
+         if tPrevItem then
+            replace quote & "U005CU002" & quote with "\" & quote in item (x - 2) to x of pLine
+         end if
+
          put false into tSkipRepeat
+         next repeat
+
+       else if tItem is "U005CU002" then
+         put true into tPrevItem
+         put true into tSkipRepeat
          next repeat
       end if
 
       put _itemClearExtraSpaces(tItem, pCommentML, tCommentSL) into tItem
-      if tCommentSL then return pLine
-      put last word of tItem into tLastWord
-
-      if char 1 of tItem is not in ",;])" then
-         put space & tItem into tItem
+      if tCommentSL then
+         put tItem into item x of pLine
+         if first char of pLine is space then delete first char of pLine
+         return pLine
       end if
 
+      if char 1 of tItem is not in ",;])" then put space & tItem into tItem
       put tItem into item x of pLine
       put true into tSkipRepeat
    end repeat
@@ -171,7 +184,7 @@ private function _itemClearExtraSpaces pLine, @pCommentML, @pCommentSL
          case "U005C"
             put _comments(_replaceOutputTokens(token tTokenNum to - 1 of pLine), pCommentML) & space after tResult
             put true into pCommentSL
-            exit repeat
+            return tResult
             break
 
          ### Multiline comment opening ###
@@ -310,7 +323,7 @@ private command _indentation pLine, @pFormatArray
    if pFormatArray["num-indent"] <= 0 then
       put 0 into pFormatArray["num-indent"]
       put empty into pFormatArray["tabs"]
-    else put char 1 to (pFormatArray["indentation"] * pFormatArray["num-indent"]) of pFormatArray["indentation-chars"] into pFormatArray["tabs"]
+   else put char 1 to (pFormatArray["indentation"] * pFormatArray["num-indent"]) of pFormatArray["indentation-chars"] into pFormatArray["tabs"]
 
    # change the level of indentation
    if pFormatArray["comment-ml"] then
@@ -529,5 +542,3 @@ private function _inString @pLine
 
    return tResult
 end _inString
-
-
