@@ -73,6 +73,7 @@
                     "default": "onSave",
                     "description": "Run on"
                 },
+
                 "livecodescript.indentation": {
                     "type": "string",
                     "enum": [
@@ -86,6 +87,12 @@
                     "type": "string",
                     "default": "1",
                     "description": "Indentation size"
+                },
+                "livecodescript.explicitVariables.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable Explicit Variables"
+
                 }
             }
         },
