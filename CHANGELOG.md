@@ -4,12 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-# [1.2.0] - 2022-10-05
+# [1.2.1] - 2022-10-05
+
+### Changed
+- Indentation changed to be consistent with current code
+
+### Added
+- Use toasts to notify about the status of the connection with LC
+
+
+
+
+
+## [1.2.0] - 2022-10-05
 
 ### Added
 - Setting to toggle explicit variable checks
 - Edited code in vscode is displayed in livecode scripts
 - Support for custom indentation
+
+
+
+
 
 ## [1.1.7] - 2022-03-22
 
