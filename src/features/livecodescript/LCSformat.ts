@@ -42,8 +42,8 @@ export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFor
                     .resolve(__dirname, "../../../tools/Formatter.lc")
                     .replace(/[\\]+/g, "/"),
                 "-scope=.source.livecodescript",
-                indentation,
-                indentationSize,
+                `-indentation=${indentation}`,
+                `-indentationSize=${indentationSize}`,
             ];
 
           /*  let container = config.get("perltidyContainer", "");
