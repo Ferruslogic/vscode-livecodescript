@@ -72,6 +72,11 @@
                     ],
                     "default": "onSave",
                     "description": "Run on"
+                },
+                "livecodescript.explicitVariables.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable Explicit Variables"
                 }
             }
         },

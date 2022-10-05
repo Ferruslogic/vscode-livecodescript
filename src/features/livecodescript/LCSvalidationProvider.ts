@@ -16,6 +16,7 @@ const enum Setting {
 	Run = 'livecodescript.validate.run',
 	Enable = 'livecodescript.validate.enable',
 	LivecodeServerExecutablePath = 'livecodescript.LivecodeServerExecutablePath',
+	ExplicitVariables = "livecodescript.explicitVariables.enable",
 }
 
 
@@ -160,13 +161,24 @@ export default class LivecodescriptValidationProvider {
 			};
 
 			let options = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) ? { cwd: vscode.workspace.workspaceFolders[0].uri.fsPath } : undefined;
-			let args: string[];
+
+			let config = vscode.workspace.getConfiguration("livecodescript");
+			let explicitVariable = config.get("explicitVariables.enable", "");
+
+			let args: string[] = [
+				path
+					.resolve(__dirname, "../../../tools/Linter.lc")
+					.replace(/[\\]+/g, "/"),
+				"-scope=.source.livecodescript",
+				`-explicitVariables=${explicitVariable}`,
+			];
+
 			// TODO: This could be improved some how
 		//	if (this.config!.trigger === RunLCSTrigger.onSave) {
 		//		args = LivecodescriptValidationProvider.FileArgs.slice(0);
 		//		args.push(textDocument.fileName);
 		//	} else {
-				args = LivecodescriptValidationProvider.BufferArgs;
+				// args = LivecodescriptValidationProvider.BufferArgs;
 		//	}
 			try {
 				let childProcess = cp.spawn(executable, args, options);
