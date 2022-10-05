@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-# [1.1.7] - 2022-03-22
+# [1.2.0] - 2022-10-05
+
+### Added
+- Setting to toggle explicit variable checks
+- Edited code in vscode is displayed in livecode scripts
+- Support for custom indentation
+
+## [1.1.7] - 2022-03-22
 
 ### Fixed
 - [LCS] The formatter now formats correctly livecode code
