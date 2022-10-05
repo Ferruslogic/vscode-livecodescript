@@ -2,26 +2,21 @@ import * as vscode from "vscode";
 import { TextDecoder } from "text-encoding";
 import { PromiseSocket } from "promise-socket";
 
-
 export default class LivecodescriptServerProvider {
 	private enabled: boolean;
 	private host: string;
 	private port: number;
 
-
 	constructor() {
 		this.loadConfiguration();
 	}
-
 
 	public activate(subscriptions: vscode.Disposable[]) {
 		subscriptions.push(this);
 		subscriptions.push(
 			vscode.workspace.onDidSaveTextDocument(
 				async ({ fileName, languageId, lineAt }) => {
-
 					console.log("DOCUMENT SAVED");
-
 					if (this.enabled && languageId === "livecodescript") {
 						const regex = '"([-.:a-zA-Z0-9_s?!]+)"';
 						const scriptName = lineAt(0).text.match(regex)[1];
@@ -30,22 +25,20 @@ export default class LivecodescriptServerProvider {
 							stack: scriptName,
 							filename: fileName,
 						};
-            
+
 						this.sendToLiveCode(query);
 					}
 				}
 			)
 		);
-
 		subscriptions.push(
 			vscode.workspace.onDidChangeConfiguration(() =>
 				this.loadConfiguration()
 			)
 		);
- 
+	}
 
 	public dispose(): void {}
-
 
 	private loadConfiguration() {
 		console.log("CONFIG CHANGED");
@@ -105,7 +98,6 @@ export default class LivecodescriptServerProvider {
 						this.sendToLiveCode(query);
 					}
 				});
-
 		}
 	}
 }
