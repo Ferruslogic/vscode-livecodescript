@@ -13,14 +13,17 @@ command FormatScript
 	local tIndentation, tIndentSize, tArgs
 
 	put the commandArguments into tArgs
-	put tArgs[3] into tIndentation
-	put tArgs[4] into tIndentSize
-
 	repeat for each element theArgument in tArgs
 		split theArgument with "="
 		switch theArgument[1]
 			case "-scope"
 				put theArgument[2] into tScope
+				break
+			case "-indentation"
+				put theArgument[2] into tIndentation
+				break
+			case "-indentationSize"
+				put theArgument[2] into tIndentSize
 				break
 		end switch
 	end repeat
