@@ -8,6 +8,7 @@ import LivecodescriptValidationProvider from './features/livecodescript/LCSvalid
 import { LivecodescriptFormattingProvider } from "./features/livecodescript/LCSformat";
 import { LivecodescriptDefinitionProvider } from "./features/livecodescript/LCSdefinitionProvider";
 import { livecodescriptConfigDocumentSymbolProvider } from "./features/livecodescript/LCSsymbolProvider";
+import LivecodescriptServerProvider from "./features/livecodescript/LCSserverProvider";
 
 import LivecodebuilderValidationProvider from "./features/livecodebuilder/LCBvalidationProvider";
 import { LivecodebuilderFormattingProvider } from "./features/livecodebuilder/LCBformat";
@@ -19,7 +20,9 @@ export function activate(context: vscode.ExtensionContext) {
     
     let validator = new LivecodescriptValidationProvider();
     let LCBuilderValidator = new LivecodebuilderValidationProvider();
-    
+
+    let server = new LivecodescriptServerProvider();
+
     let formatProvider = new LivecodescriptFormattingProvider();
     let definitionProvider = new LivecodescriptDefinitionProvider();
     let symbolProvider = new livecodescriptConfigDocumentSymbolProvider();
@@ -31,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     LCBuilderValidator.activate(context.subscriptions);
     validator.activate(context.subscriptions);
+    server.activate(context.subscriptions);
 
 
     context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider({ scheme: "file", language: "livecodescript" }, symbolProvider));
