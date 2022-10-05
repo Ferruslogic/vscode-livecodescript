@@ -10,9 +10,13 @@ command FormatScript
 	local tScope, tLCCompile, tModulePaths, theArgument, tFilename, tLCIDirectory
 	local tIndex
 	local tFirstline
+	local tIndentation, tIndentSize, tArgs
 
-	repeat for each element theArgument in the commandArguments
+	put the commandArguments into tArgs
+	put tArgs[3] into tIndentation
+	put tArgs[4] into tIndentSize
 
+	repeat for each element theArgument in tArgs
 		split theArgument with "="
 		switch theArgument[1]
 			case "-scope"
@@ -31,7 +35,11 @@ command FormatScript
 	local tErrors
 	switch tScope
 		case ".source.livecodescript"
-			put textFormatAsScript(tScript, 3, false, false, true) into tScript
+			if tIndentation is "tab" then
+				put textFormatAsScript(tScript, 1, true, false, true) into tScript
+			else
+				put textFormatAsScript(tScript, tIndentSize, false, false, true) into tScript
+			end if
 			if tFirstline is not empty then put tFirstline into the first line of tScript
 			write tScript to stdout
 			break

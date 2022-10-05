@@ -2,7 +2,7 @@
     "name": "livecodescript",
     "description": "This extension adds several features to handle livecodescript files",
     "displayName": "Livecode Language Support",
-    "version": "1.1.7",
+    "version": "1.2.0",
     "author": "FerrusLogic",
     "publisher": "Ferruslogic",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -72,6 +72,41 @@
                     ],
                     "default": "onSave",
                     "description": "Run on"
+                },
+                "livecodescript.server.enable": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable LiveCode liveserver"
+                },
+                "livecodescript.server.host": {
+                    "type": "string",
+                    "default": "localhost",
+                    "description": "Server Host for liveserver"
+                },
+                "livecodescript.server.port": {
+                    "type": "string",
+                    "default": "61373",
+                    "description": "Server Port for liveserver"
+                },
+                "livecodescript.indentation": {
+                    "type": "string",
+                    "enum": [
+                        "spaces",
+                        "tab"
+                    ],
+                    "default": "tab",
+                    "description": "Indentation type selection"
+                },
+                "livecodescript.indentationSize": {
+                    "type": "string",
+                    "default": "1",
+                    "description": "Indentation size"
+                },
+                "livecodescript.explicitVariables.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable Explicit Variables"
+
                 }
             }
         },
@@ -212,6 +247,8 @@
         "pretest": "npm run compile"
     },
     "dependencies": {
+        "promise-socket": "^7.0.0",
+        "text-encoding": "^0.7.0",
         "vscode-nls": "^4.0.0",
         "which": "^2.0.2"
     },
