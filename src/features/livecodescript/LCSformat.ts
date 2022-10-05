@@ -34,9 +34,18 @@ export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFor
 
             let config = vscode.workspace.getConfiguration('livecodescript');
             let executable = config.get("LivecodeServerExecutablePath", "");
- 
-            let args: string[] = [(path.resolve(__dirname, '../../../tools/Formatter.lc')).replace(/[\\]+/g,"/"), '-scope=.source.livecodescript'];
- 
+            let indentation = config.get("indentation", "");
+            let indentationSize = config.get("indentationSize", "");
+
+            let args: string[] = [
+                path
+                    .resolve(__dirname, "../../../tools/Formatter.lc")
+                    .replace(/[\\]+/g, "/"),
+                "-scope=.source.livecodescript",
+                indentation,
+                indentationSize,
+            ];
+
           /*  let container = config.get("perltidyContainer", "");
             if (container !== "") {
                 args = ["exec", "-i", container, executable].concat(args);

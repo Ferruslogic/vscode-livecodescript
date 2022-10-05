@@ -87,6 +87,26 @@
                     "type": "string",
                     "default": "61373",
                     "description": "Server Port for liveserver"
+                },
+                "livecodescript.indentation": {
+                    "type": "string",
+                    "enum": [
+                        "spaces",
+                        "tab"
+                    ],
+                    "default": "tab",
+                    "description": "Indentation type selection"
+                },
+                "livecodescript.indentationSize": {
+                    "type": "string",
+                    "default": "1",
+                    "description": "Indentation size"
+                },
+                "livecodescript.explicitVariables.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable Explicit Variables"
+
                 }
             }
         },
