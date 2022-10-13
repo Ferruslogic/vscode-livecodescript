@@ -88,6 +88,11 @@
                     "default": "61373",
                     "description": "Server Port for liveserver"
                 },
+                "livecodescript.formatter.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable code Formatting"
+                },
                 "livecodescript.indentation": {
                     "type": "string",
                     "enum": [

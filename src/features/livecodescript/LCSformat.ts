@@ -19,8 +19,9 @@ export class LivecodescriptFormattingProvider implements vscode.DocumentRangeFor
         // if perltidy is not defined, then skip the formatting
         let config = vscode.workspace.getConfiguration('livecodescript');
         let executable = config.get("LivecodeServerExecutablePath", "");
+        let formatter = config.get("formatter.enable");
 
-        if (!vscode.workspace.getConfiguration('livecodescript').get("LivecodeServerExecutablePath")) {
+        if (!vscode.workspace.getConfiguration('livecodescript').get("LivecodeServerExecutablePath") || !formatter) {
             return [];
         }
 
