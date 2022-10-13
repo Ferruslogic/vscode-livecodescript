@@ -26,6 +26,17 @@
         "onLanguage:livecodebuilder"
     ],
     "contributes": {
+        "customEditors": [
+            {
+                "viewType": "LiveCodeStack.livecode",
+                "displayName": "LiveCode Stack",
+                "selector": [
+                    {
+                        "filenamePattern": "*.livecode"
+                    }
+                ]
+            }
+        ],
         "configuration": {
             "title": "Livecode",
             "type": "object",
@@ -106,7 +117,6 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enable Explicit Variables"
-
                 }
             }
         },
