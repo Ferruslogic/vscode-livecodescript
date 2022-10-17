@@ -1,14 +1,13 @@
 import * as vscode from "vscode";
-import { TextDecoder } from "text-encoding";
-import { PromiseSocket } from "promise-socket";
+import LivecodescriptSender from "./LCSsendToLiveCode";
 
 export default class LivecodescriptServerProvider {
 	private enabled: boolean;
-	private host: string;
-	private port: number;
+	private sender: LivecodescriptSender;
 
-	constructor() {
+	constructor(sender: LivecodescriptSender) {
 		this.loadConfiguration();
+		this.sender = sender;
 	}
 
 	public activate(subscriptions: vscode.Disposable[]) {
@@ -26,7 +25,7 @@ export default class LivecodescriptServerProvider {
 							filename: fileName,
 						};
 
-						this.sendToLiveCode(query);
+						await this.sender.send(query);
 					}
 				}
 			)
@@ -44,60 +43,5 @@ export default class LivecodescriptServerProvider {
 		console.log("CONFIG CHANGED");
 		const section = vscode.workspace.getConfiguration("livecodescript");
 		this.enabled = section.get("server.enable", false);
-		this.host = section.get("server.host", "localhost");
-		this.port = section.get("server.port", 61373);
-	}
-
-	private async sendToLiveCode(query) {
-		let prms = new URLSearchParams(query);
-		const socket = new PromiseSocket();
-		socket.setTimeout(300);
-
-		try {
-			await socket.connect(this.port, this.host);
-			await socket.write(`${prms.toString()}\n`);
-
-			const data = await socket.read();
-			socket.destroy();
-			let result = new TextDecoder().decode(data);
-
-			if (result !== "success") {
-				if (result.includes("error: 360")) {
-					vscode.window.showInformationMessage(
-						"error: script is being executed within Livecode"
-					);
-				} else {
-					vscode.window
-						.showErrorMessage(
-							`error running command in LiveCode: ${result}`,
-							...["Retry"]
-						)
-						.then((selection) => {
-							console.log(selection);
-							if (selection === "Retry") {
-								this.sendToLiveCode(query);
-							}
-						});
-				}
-			} else {
-				vscode.window.showInformationMessage(
-					"command successfully sent to LiveCode"
-				);
-			}
-		} catch (err) {
-			socket.destroy();
-			console.log(err);
-			vscode.window
-				.showErrorMessage(
-					"An error occurred while updating LiveCode.",
-					...["Retry"]
-				)
-				.then((selection) => {
-					console.log(selection);
-					if (selection === "Retry") {
-						this.sendToLiveCode(query);
-					}
-				});
-		}
 	}
 }

@@ -2,7 +2,7 @@
     "name": "livecodescript",
     "description": "This extension adds several features to handle livecodescript files",
     "displayName": "Livecode Language Support",
-    "version": "1.2.1",
+    "version": "1.3.0",
     "author": "FerrusLogic",
     "publisher": "Ferruslogic",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -26,6 +26,17 @@
         "onLanguage:livecodebuilder"
     ],
     "contributes": {
+        "customEditors": [
+            {
+                "viewType": "LiveCodeStack.livecode",
+                "displayName": "LiveCode Stack",
+                "selector": [
+                    {
+                        "filenamePattern": "*.livecode"
+                    }
+                ]
+            }
+        ],
         "configuration": {
             "title": "Livecode",
             "type": "object",
@@ -88,6 +99,11 @@
                     "default": "61373",
                     "description": "Server Port for liveserver"
                 },
+                "livecodescript.formatter.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable code Formatting"
+                },
                 "livecodescript.indentation": {
                     "type": "string",
                     "enum": [
@@ -106,7 +122,6 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enable Explicit Variables"
-
                 }
             }
         },

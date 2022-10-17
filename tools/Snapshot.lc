@@ -1,0 +1,21 @@
+<?livecode
+set the outputLineEndings to "lf"
+SnapShot
+
+command SnapShot
+	local tFilePath, tSnapShot
+	put commandArguments(2) into tFilePath
+
+	try
+		lock messages
+		open stack tFilePath
+		unlock messages
+
+		export snapshot from card 1 of stack tFilePath to tSnapShot as PNG
+		write the title of stack tFilePath & return & the the short name of stack tFilePath \
+				& return & base64encode(tSnapShot) & return to stdout
+	catch tError
+		write "error" & return & tError & return to stderr
+	end try
+
+end SnapShot
