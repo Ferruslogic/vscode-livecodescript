@@ -6,6 +6,7 @@ export default class LivecodescriptSender {
 	private host: string;
 	private port: number;
 	private hideError: boolean = false;
+	private ignoreConnectionErrors: boolean
 
 	constructor() {
 		this.loadConfiguration();
@@ -39,7 +40,7 @@ export default class LivecodescriptSender {
 								this.send(query);
 							}
 						});
-				} else {
+				} else if (result !== "ignored") {
 					vscode.window
 						.showErrorMessage(
 							`Error running command in LiveCode: ${result}`,
@@ -61,7 +62,7 @@ export default class LivecodescriptSender {
 			socket.destroy();
 			console.log(err);
 			if (err.code === "ECONNREFUSED") {
-				if (!this.hideError) {
+				if (!this.hideError && !this.ignoreConnectionErrors) {
 					vscode.window
 						.showErrorMessage(
 							"Could not connect to LiveCode. Make sure LiveCode is running and listening on the correct port",
@@ -106,5 +107,6 @@ export default class LivecodescriptSender {
 		const section = vscode.workspace.getConfiguration("livecodescript");
 		this.host = section.get("server.host", "localhost");
 		this.port = section.get("server.port", 61373);
+		this.ignoreConnectionErrors = section.get("server.ignoreConnectionErrors");
 	}
 }

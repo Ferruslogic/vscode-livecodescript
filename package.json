@@ -99,6 +99,11 @@
                     "default": "61373",
                     "description": "Server Port for liveserver"
                 },
+                "livecodescript.server.ignoreConnectionErrors": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Ignore Connection Errors if LiveCode is not opened"
+                },
                 "livecodescript.formatter.enable": {
                     "type": "boolean",
                     "default": true,
