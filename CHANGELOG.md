@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-# [1.3.0] - 2022-10-05
+# [1.3.1] - 2023-03-20
+
+
+### Added
+- A setting to ignore connection errors if not liveserver is not running 
+
+
+## [1.3.0] - 2022-10-05
 
 ### Changed
 - Indentation changed to be consistent with current code
