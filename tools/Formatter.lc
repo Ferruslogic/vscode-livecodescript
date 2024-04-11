@@ -90,7 +90,7 @@ function textFormatAsScript pScript, pIndentation, pUseTabs, pMarginInBlankLines
 	put empty into tFormatArray["handler-indentation"]
 	put 0 into tFormatArray["num-indent"]
 	put false into tFormatArray["breakpoint"]
-	put char 1 to (tFormatArray["indentation"] * 2) of tFormatArray["indentation-chars"] into tFormatArray["other-line-space"]
+	put char 1 to (tFormatArray["indentation"] ) of tFormatArray["indentation-chars"] into tFormatArray["other-line-space"]
 	put char 1 to trunc(tFormatArray["indentation"] / 2) of tFormatArray["indentation-chars"] into tFormatArray["else-space"]
 	put false into tFormatArray["continue-in-other-line"]
 	put false into tFormatArray["other-line"]
@@ -244,17 +244,40 @@ end _itemClearExtraSpaces
 
 
 private function _comments pLine, @pCommentML
-	local tEndCML, tResult
+   /* If not in a multi-comment block abort */
+   if not pCommentML then
+	return pLine
+   end if
 
-	if pCommentML is true and "*/" is in pLine then
+	/* Compute if this is the closure line */
+	if "*/" is in pLine then
+		local tResult
+		local tEndCML
 		put offset("*/", pLine) + 1 into tEndCML
-		put the char 1 to tEndCML of pLine into tResult
+		put char 1 to tEndCML of pLine into tResult
 
 		put false into pCommentML
 		add 1 to tEndCML
-		put space & _lineClearExtraSpaces(the char tEndCML to - 1 of pLine, pCommentML) after tResult
+		put space & _lineClearExtraSpaces( \
+			the char tEndCML to - 1 of pLine, \
+			 pCommentML) after tResult
+	put tResult into pLine
+	end if
 
-		return tResult
+	if "/*" is not in pLine then
+	    /* Ensure multiline middle lines begins with a '*' */
+	    if char 1 of pLine is not "*" then
+			put "* " before pLine
+	    end if
+		put space before pLine
+	else
+		/* Format the beginning of the block */
+		local tOffset
+		put offset("/*",pLine) into tOffset
+
+		if char (tOffset + 1) of pLine is not in (space,"*") then
+			put space after char (tOffset + 1) of pLine 
+		end if
 	end if
 
 	return pLine
