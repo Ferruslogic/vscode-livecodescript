@@ -76,4 +76,5 @@ jobs:
       - uses: actions/download-artifact@v2
       - run: npx vsce publish --packagePath $(find . -iname *.vsix)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
