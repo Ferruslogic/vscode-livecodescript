@@ -14,22 +14,24 @@ export default class LivecodescriptServerProvider {
 		subscriptions.push(this);
 		subscriptions.push(
 			vscode.workspace.onDidSaveTextDocument(
-				async ({ fileName, languageId, lineAt }) => {
-					console.log("DOCUMENT SAVED");
-					if (this.enabled && languageId === "livecodescript") {
-						const regex = '"([-.:a-zA-Z0-9_s?!]+)"';
-						const scriptName = lineAt(0).text.match(regex)[1];
-						const query = {
-							command: "reload script",
-							stack: scriptName,
-							filename: fileName,
-						};
+                async ({ fileName, languageId, lineAt }) => {
+                    console.log("DOCUMENT SAVED");
+                    if (this.enabled && languageId === "livecodescript") {
+                        const regex = /"([-.:a-zA-Z0-9_\s?!]+)"/;
+                        const match = lineAt(0).text.match(regex)
+                        /* if the regex finds nothing it returns null so we run a check to avoid erroring out */
+                        const scriptName = match ? match[1] : null 
+                        const query = {
+                            command: scriptName === null ? `Error parsing script name from file ${fileName}!` : "reload script",
+                            stack: scriptName,
+                            filename: fileName,
+                        };
 
-						await this.sender.send(query);
-					}
-				}
-			)
-		);
+                        await this.sender.send(query);
+                    }
+                }
+            )
+        );
 		subscriptions.push(
 			vscode.workspace.onDidChangeConfiguration(() =>
 				this.loadConfiguration()
