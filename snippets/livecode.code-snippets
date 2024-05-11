@@ -1,197 +1,482 @@
 {
-      "COOKIE['...']": {
-        "prefix": "$_",
-        "body": "\\$_COOKIE[\"${1:variable}\"]"
-      },
-      "Command": {
-        "prefix": ["command"],
-        "body": "command ${1:name} ${2:params}\n\t${3:# code...}\nend ${1}\n${0}"
-      },
-      "On": {
-        "prefix": ["on"],
-        "body": "on ${1:name} ${2:params}\n\t${3:# code...}\nend ${1}\n${0}"
-      },
-  
-      "FILES['...']": {
-        "prefix": "$_",
-        "body": "\\$_FILES[\"${1:variable}\"]"
-      },
-      "Function": {
-        "prefix": "function",
-        "body": "function ${1:name} ${2:params}\n\t${3:# code...}\nend ${1}\n${0}"
-      },
-      "GET['…']": {
-        "prefix": "$_",
-        "body": "\\$_GET[\"${1:variable}\"]"
-      },
-      "GET_BINARY['…']": {
-        "prefix": "$_",
-        "body": "\\$_GET_BINARY[\"${1:variable}\"]"
-      },
-      "GET_RAW['…']": {
-        "prefix": "$_",
-        "body": "\\$_GET_RAW[\"${1:variable}\"]"
-      },
-      "If": {
-        "prefix": "if",
-        "body": "if ${1:# code...} then\n\t${2:# code...}\nend if\n${0}"
-      },
-      "POST['…']": {
-        "prefix": "$_",
-        "body": "\\$_POST[\"${1:variable}\"]"
-      },
-      "POST_BINARY['…']": {
-        "prefix": "$_",
-        "body": "\\$_POST_BINARY[\"${1:variable}\"]"
-      },
-      "POST_RAW['…']": {
-        "prefix": "$_",
-        "body": "\\$_POST_RAW[\"${1:variable}\"]"
-      },
-      "Repeat": {
-        "prefix": "repeat",
-        "body": "repeat ${1:loopform}\n\t${0:# code...}\nend repeat"
-      },
-      "SERVER['CONTENT_LENGTH']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"CONTENT_LENGTH\"]"
-      },
-      "SERVER['CONTENT_TYPE']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"CONTENT_TYPE\"]"
-      },
-      "SERVER['DOCUMENT_ROOT']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"DOCUMENT_ROOT\"]"
-      },
-      "SERVER['GATEWAY_INTERFACE']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"GATEWAY_INTERFACE\"]"
-      },
-      "SERVER['HTTPS']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTPS\"]"
-      },
-      "SERVER['HTTP_ACCEPT']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_ACCEPT\"]"
-      },
-      "SERVER['HTTP_ACCEPT_ENCODING']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_ACCEPT_ENCODING\"]"
-      },
-      "SERVER['HTTP_ACCEPT_LANGUAGE']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_ACCEPT_LANGUAGE\"]"
-      },
-      "SERVER['HTTP_CONNECTION']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_CONNECTION\"]"
-      },
-      "SERVER['HTTP_COOKIE']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_COOKIE\"]"
-      },
-      "SERVER['HTTP_DNT']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_DNT\"]"
-      },
-      "SERVER['HTTP_HOST']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_HOST\"]"
-      },
-      "SERVER['HTTP_REFERRER']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_REFERRER\"]"
-      },
-      "SERVER['HTTP_USER_AGENT']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"HTTP_USER_AGENT\"]"
-      },
-      "SERVER['PATH_INFO']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"PATH_INFO\"]"
-      },
-      "SERVER['PATH_TRANSLATED']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"PATH_TRANSLATED\"]"
-      },
-      "SERVER['QUERY_STRING']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"QUERY_STRING\"]"
-      },
-      "SERVER['REMOTE_ADDR']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"REMOTE_ADDR\"]"
-      },
-      "SERVER['REMOTE_HOST']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"REMOTE_HOST\"]"
-      },
-      "SERVER['REMOTE_PORT']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"REMOTE_PORT\"]"
-      },
-      "SERVER['REMOTE_USER']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"REMOTE_USER\"]"
-      },
-      "SERVER['REQUEST_METHOD']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"REQUEST_METHOD\"]"
-      },
-      "SERVER['REQUEST_TIME']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"REQUEST_TIME\"]"
-      },
-      "SERVER['REQUEST_URI']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"REQUEST_URI\"]"
-      },
-      "SERVER['SCRIPT_FILENAME']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SCRIPT_FILENAME\"]"
-      },
-      "SERVER['SCRIPT_NAME']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SCRIPT_NAME\"]"
-      },
-      "SERVER['SERVER_ADDR']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SERVER_ADDR\"]"
-      },
-      "SERVER['SERVER_ADMIN']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SERVER_ADMIN\"]"
-      },
-      "SERVER['SERVER_NAME']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SERVER_NAME\"]"
-      },
-      "SERVER['SERVER_PORT']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SERVER_PORT\"]"
-      },
-      "SERVER['SERVER_PROTOCOL']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SERVER_PROTOCOL\"]"
-      },
-      "SERVER['SERVER_SIGNATURE']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SERVER_SIGNATURE\"]"
-      },
-      "SERVER['SERVER_SOFTWARE']": {
-        "prefix": "$_",
-        "body": "\\$_SERVER[\"SERVER_SOFTWARE\"]"
-      },
-      "Switch": {
-        "prefix": "switch",
-        "body": "switch ${1:switchExpression}\n\tcase ${2:caseValue}\n\t\t${3:# code...}\n\tbreak\n\tdefault\n\t${4:# code...}\nend switch\n${0}"
-      },
-      "Try": {
-        "prefix": "try",
-        "body": "try\n\t${1:# code...}\ncatch ${2:tError}\n\t${3:# code...}\nend try\n${0}"  
-      }
-   
-    }
-  
+  "COOKIE['...']": {
+    "prefix": "$_",
+    "body": "\\$_COOKIE[\"${1:variable}\"]"
+  },
+  "FILES['...']": {
+    "prefix": "$_",
+    "body": "\\$_FILES[\"${1:variable}\"]"
+  },
+  "GET['…']": {
+    "prefix": "$_",
+    "body": "\\$_GET[\"${1:variable}\"]"
+  },
+  "GET_BINARY['…']": {
+    "prefix": "$_",
+    "body": "\\$_GET_BINARY[\"${1:variable}\"]"
+  },
+  "GET_RAW['…']": {
+    "prefix": "$_",
+    "body": "\\$_GET_RAW[\"${1:variable}\"]"
+  },
+  "POST['…']": {
+    "prefix": "$_",
+    "body": "\\$_POST[\"${1:variable}\"]"
+  },
+  "POST_BINARY['…']": {
+    "prefix": "$_",
+    "body": "\\$_POST_BINARY[\"${1:variable}\"]"
+  },
+  "POST_RAW['…']": {
+    "prefix": "$_",
+    "body": "\\$_POST_RAW[\"${1:variable}\"]"
+  },
+  "SERVER['CONTENT_LENGTH']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"CONTENT_LENGTH\"]"
+  },
+  "SERVER['CONTENT_TYPE']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"CONTENT_TYPE\"]"
+  },
+  "SERVER['DOCUMENT_ROOT']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"DOCUMENT_ROOT\"]"
+  },
+  "SERVER['GATEWAY_INTERFACE']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"GATEWAY_INTERFACE\"]"
+  },
+  "SERVER['HTTPS']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTPS\"]"
+  },
+  "SERVER['HTTP_ACCEPT']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_ACCEPT\"]"
+  },
+  "SERVER['HTTP_ACCEPT_ENCODING']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_ACCEPT_ENCODING\"]"
+  },
+  "SERVER['HTTP_ACCEPT_LANGUAGE']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_ACCEPT_LANGUAGE\"]"
+  },
+  "SERVER['HTTP_CONNECTION']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_CONNECTION\"]"
+  },
+  "SERVER['HTTP_COOKIE']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_COOKIE\"]"
+  },
+  "SERVER['HTTP_DNT']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_DNT\"]"
+  },
+  "SERVER['HTTP_HOST']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_HOST\"]"
+  },
+  "SERVER['HTTP_REFERRER']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_REFERRER\"]"
+  },
+  "SERVER['HTTP_USER_AGENT']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"HTTP_USER_AGENT\"]"
+  },
+  "SERVER['PATH_INFO']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"PATH_INFO\"]"
+  },
+  "SERVER['PATH_TRANSLATED']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"PATH_TRANSLATED\"]"
+  },
+  "SERVER['QUERY_STRING']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"QUERY_STRING\"]"
+  },
+  "SERVER['REMOTE_ADDR']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"REMOTE_ADDR\"]"
+  },
+  "SERVER['REMOTE_HOST']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"REMOTE_HOST\"]"
+  },
+  "SERVER['REMOTE_PORT']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"REMOTE_PORT\"]"
+  },
+  "SERVER['REMOTE_USER']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"REMOTE_USER\"]"
+  },
+  "SERVER['REQUEST_METHOD']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"REQUEST_METHOD\"]"
+  },
+  "SERVER['REQUEST_TIME']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"REQUEST_TIME\"]"
+  },
+  "SERVER['REQUEST_URI']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"REQUEST_URI\"]"
+  },
+  "SERVER['SCRIPT_FILENAME']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SCRIPT_FILENAME\"]"
+  },
+  "SERVER['SCRIPT_NAME']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SCRIPT_NAME\"]"
+  },
+  "SERVER['SERVER_ADDR']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SERVER_ADDR\"]"
+  },
+  "SERVER['SERVER_ADMIN']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SERVER_ADMIN\"]"
+  },
+  "SERVER['SERVER_NAME']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SERVER_NAME\"]"
+  },
+  "SERVER['SERVER_PORT']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SERVER_PORT\"]"
+  },
+  "SERVER['SERVER_PROTOCOL']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SERVER_PROTOCOL\"]"
+  },
+  "SERVER['SERVER_SIGNATURE']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SERVER_SIGNATURE\"]"
+  },
+  "SERVER['SERVER_SOFTWARE']": {
+    "prefix": "$_",
+    "body": "\\$_SERVER[\"SERVER_SOFTWARE\"]"
+  },// MARK:CONTROL STRUCTURE
+  "Message handler": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": [
+      "on",
+      "message"
+    ],
+    "body": [
+      "${1|on,after,before|} ${2:messageName} ${3:pParametersList}",
+      "   $4",
+      "end ${2:messageName}"
+    ],
+    "description": "Defines a message handler.",
+  },
+  "Private message handler": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": [
+      "private:on",
+      "private:message"
+    ],
+    "body": [
+      "/* Description of handler",
+      "* The `${1:messageName}` message ...",
+      "*",
+      "* pParam1 (string): ...",
+      "*/",
+      "private on ${1:messageName} ${2:pParametersList}",
+      "   $3",
+      "end ${1:messageName}"
+    ],
+    "description": "Defines a message handler.",
+  },
+  "Exit handler": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "exit:handler",
+    "body": [
+      "exit ${1:handler}",
+    ],
+    "description": "Stops execution of a handler.",
+  },
+  "Exit repeat": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "exit:repeat",
+    "body": [
+      "exit repeat",
+    ],
+    "description": "Skips the rest of the current repeat loop and goes to the statement following the end repeat.",
+  },
+  "Exit to top": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "exit:to.top",
+    "body": [
+      "exit to top",
+    ],
+    "description": "Halts the current handler and all pending handlers.",
+  },
+  "Private function": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "private:function",
+    "body": [
+      "/* Description of function",
+      "* The `_${1:functionName}` function ...",
+      "*",
+      "* pParam1 (string): ...",
+      "* ",
+      "* returns (string): ...",
+      "*/",
+      "private function _${1:functionName} ${2:pParametersList}",
+      "   local tResult",
+      "   $3",
+      "   return tResult",
+      "end _${1:functionName}"
+    ],
+    "description": "Defines a message handler.",
+  },
+  "Function with its documentation": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "function",
+    "body": [
+      "/**",
+      "Name: ${1:functionName}\n",
+      "Type: function",
+      "Syntax: ${1:functionName} <${2:pParametersList}>",
+      "Summary: ${3:Message sent to the object}",
+      "Parameters:",
+      "${2:pParametersList}:${4:Description of the parameters}",
+      "Description:",
+      "Use the <${1:functionName}> function to ${5:Description of the function:}",
+      "*/",
+      "function ${1:functionName} ${2:pParametersList}",
+      "   $6",
+      "end ${1:functionName}"
+    ],
+    "description": "Defines a custom function handler.",
+  },
+  "Private command": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "private:command",
+    "body": [
+      "/* Description of command",
+      "* The `_${1:commandName}` command ...",
+      "*",
+      "* pParam1 (string): ...",
+      "* ",
+      "* returns (string): ...",
+      "*/",
+      "private command _${1:commandName} ${2:pParametersList}",
+      "   $3",
+      "end _${1:commandName}"
+    ],
+    "description": "Defines a message handler.",
+  },
+  "command with its documentation": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "command",
+    "body": [
+      "/**",
+      "Name: ${1:commandName}\n",
+      "Type: command",
+      "Syntax: ${1:commandName} <${2:pParametersList}>",
+      "Summary: ${3:Message sent to the object}",
+      "Parameters:",
+      "${2:pParametersList}:${4:Description of the parameters}",
+      "Description:",
+      "Use the <${1:commandName}> command to ${5:Description of the command:}",
+      "*/",
+      "command ${1:commandName} ${2:pParametersList}",
+      "   $6",
+      "end ${1:commandName}"
+    ],
+    "description": "Defines a custom command handler.",
+  },
+  "Access one of its personalized properties": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "get:custom.property",
+    "body": [
+      "getProp ${1:propertyName}",
+      "   ${2:statementList}",
+      "end ${1:propertyName}"
+    ],
+    "description": "Handles the message sent to an object when you access one of its custom properties.",
+  },
+  "Evaluates a conditional expression to determine if it is true": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "if",
+    "body": [
+      "if ${1:condition } then",
+      "   ${2:statementList}",
+      "${3:else\n   ${4:elseStatementList}}",
+      "end if"
+    ],
+    "description": "Evaluates a conditional expression to determine if it is true and if so executes a subsequent statement or statement list. If the condition is false and the if control structure contains an else keyword the statement or statement list following the else is executed. The if control structure may contain one or more else if keywords which have a conditional expression. If the conditional expression for one of these evaluates to be true then the statement or statement list following that else if is executed. If the if control structure contains more than one line then the if control structure must end with an end if keyword.",
+  },
+  "Evaluates a conditional expression to determine if": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "if:else",
+    "body": [
+      "if ${1:condition} then",
+      "   ${2:statementList}",
+      "${3:else ${4:if ${5:condition} then}\n   ${6:elseStatementList}}",
+      "end if"
+    ],
+    "description": "Evaluates a conditional expression to determine if it is true and if so executes a subsequent statement or statement list. If the condition is false and the if control structure contains an else keyword the statement or statement list following the else is executed. The if control structure may contain one or more else if keywords which have a conditional expression. If the conditional expression for one of these evaluates to be true then the statement or statement list following that else if is executed. If the if control structure contains more than one line then the if control structure must end with an end if keyword.",
+  },
+  "Skips the rest of the current iteration.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "next:repeat",
+    "body": [
+      "next repeat",
+    ],
+    "description": "Skips the rest of the current iteration and goes back to the top of the repeat structure.",
+  },
+  "Stops the current handler and passes the message": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "pass:handler",
+    "body": [
+      "pass \"${1:messageName}\" ${2| ,to top|}",
+    ],
+    "description": "Stops the current handler and passes the message to the next object in the message path.",
+  },
+  "Repeat forever.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "repeat:forever",
+    "body": [
+      "repeat forever",
+      "   // ${1:statementList}",
+      "   if ${2:condition} then",
+      "      exit repeat",
+      "   end if",
+      "end repeat",
+    ],
+    "description": "Executes a set of statements repeatedly.",
+  },
+  "Repeat while condition.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "repeat:while",
+    "body": [
+      "repeat while ${1:condition}",
+      "   ${2:// statementList}",
+      "end repeat",
+    ],
+    "description": "Executes a set of statements repeatedly.",
+  },
+  "Repeat until condition.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "repeat:until",
+    "body": [
+      "repeat until ${1:condition}",
+      "   ${2:// statementList}",
+      "end repeat",
+    ],
+    "description": "Executes a set of statements repeatedly.",
+  },
+  "Repeat for number.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "repeat:number",
+    "body": [
+      "repeat for ${1:number} ${2:times}",
+      "   ${3:// statementList}",
+      "end repeat",
+    ],
+    "description": "Executes a set of statements repeatedly.",
+  },
+  "Repeat with.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "repeat:with",
+    "body": [
+      "repeat with ${1:counterVariable} = ${2:startValue} ${3|to,down to|} ${4:endValue} ${5:step ${6:increment}}",
+      "   ${7:// statementList}",
+      "end repeat",
+    ],
+    "description": "Executes a set of statements repeatedly.",
+  },
+  "repeat for each chunkType labelVariable in container.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "repeat:for.each.in.container",
+    "body": [
+      "repeat for each ${1|byte,codeunit,codepoint,char,token,trueword,word,item,sentence,paragraph,line|} ${2:labelVariable} in ${3:container}",
+      "   ${4:// statementList}",
+      "end repeat",
+    ],
+    "description": "Executes a set of statements repeatedly.",
+  },
+  "Loop through the elements of the array.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "repeat:for.each.in.array",
+    "body": [
+      "repeat for each ${1|element,key|} ${2:labelVariable} in ${3:array}",
+      "   ${4:// statementList}",
+      "end repeat",
+    ],
+    "description": "Executes a set of statements repeatedly.",
+  },
+  "Stops the current handler and returns a value.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "return:value",
+    "body": [
+      "return ${1:value} ${2:for ${3|value,error|}}",
+    ],
+    "description": "Stops the current handler and returns a value to the handler that called the current handler.",
+  },
+  "Setting one of its custom properties.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "set:custom.property",
+    "body": [
+      "setProp ${1:propertyName}",
+      "   ${2:// statementList}",
+      "   pass ${1:propertyName}",
+      "end ${1:propertyName}"
+    ],
+    "description": "Handles the trigger sent to an object when you change one of its custom properties.",
+  },
+  "Switch Expression.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "switch:expression",
+    "body": [
+      "switch ${1: //switchExpression}",
+      "   case ${2:caseValue}",
+      "      ${3:// statementList}",
+      "      break",
+      "   ${4:default\n     ${5:// defaultStatementList}}",
+      "end switch",
+    ],
+    "description": "Chooses among several possible values for an expression, and executes a set of statements that depends on the value.",
+  },
+  "Switch Case Condition.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "switch:case.condition",
+    "body": [
+      "switch",
+      "   case ${1:caseCondition}",
+      "      ${2:// statementList}",
+      "      break",
+      "   ${3:default\n     ${4:// defaultStatementList}}",
+      "end switch",
+    ],
+    "description": "Chooses among several possible values for an expression, and executes a set of statements that depends on the value.",
+  },
+  "Returns an error message.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "throw",
+    "body": [
+      "throw \"${1:errorString}\"",
+    ],
+    "description": "Returns an error message to a control structure.",
+  },
+  "Execute a series of statements and handle any error messages.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "try",
+    "body": [
+      "try",
+      "   ${1:// statementList}",
+      "${2:catch ${3:errorVariable}\n     ${4:// errorStatementsList}\n${5:finally\n     ${6:// serrorStatementsList}}}",
+      "end try",
+    ],
+    "description": "Executes a list of statements, sending any errors to the try structure to be handled.",
+  },
+}
