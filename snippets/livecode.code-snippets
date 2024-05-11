@@ -298,9 +298,9 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "get:custom.property",
     "body": [
-      "getProp ${1:propertyName}",
-      "   ${2:statementList}",
-      "end ${1:propertyName}"
+      "getProp ${1:cPropertyName}",
+      "   ${2:/* statementList */}",
+      "end ${1:cPropertyName}"
     ],
     "description": "Handles the message sent to an object when you access one of its custom properties.",
   },
@@ -308,9 +308,9 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "if",
     "body": [
-      "if ${1:condition } then",
-      "   ${2:statementList}",
-      "${3:else\n   ${4:// elseStatementList}}",
+      "if ${1:/* condition */ } then",
+      "   ${2:/* statementList */}",
+      "${3:else\n   ${4:/* elseStatementList */}}",
       "end if"
     ],
     "description": "Evaluates a conditional expression to determine if it is true and if so executes a subsequent statement or statement list. If the condition is false and the if control structure contains an else keyword the statement or statement list following the else is executed. The if control structure may contain one or more else if keywords which have a conditional expression. If the conditional expression for one of these evaluates to be true then the statement or statement list following that else if is executed. If the if control structure contains more than one line then the if control structure must end with an end if keyword.",
@@ -319,9 +319,9 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "if:else",
     "body": [
-      "if ${1:condition} then",
-      "   ${2:statementList}",
-      "${3:else ${4:if ${5:condition} then}\n   ${6: // elseStatementList}}",
+      "if ${1:/* condition */} then",
+      "   ${2: /* statementList */}",
+      "${3:else ${4:if ${5:/* condition */} then}\n   ${6: /* elseStatementList */}}",
       "end if"
     ],
     "description": "Evaluates a conditional expression to determine if it is true and if so executes a subsequent statement or statement list. If the condition is false and the if control structure contains an else keyword the statement or statement list following the else is executed. The if control structure may contain one or more else if keywords which have a conditional expression. If the conditional expression for one of these evaluates to be true then the statement or statement list following that else if is executed. If the if control structure contains more than one line then the if control structure must end with an end if keyword.",
@@ -330,7 +330,7 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "else",
     "body": [
-      "${1:else}\n   ${2:// elseStatementList}",
+      "${1:else}\n   ${2:/* elseStatementList */}",
     ],
     "description": "Used within an if control structure to contain statements to be performed if the condition is not true.",
   },
@@ -338,7 +338,7 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "else:if",
     "body": [
-      "else ${1:if ${2:condition} then}\n ${3: // elseStatementList}}",
+      "else ${1:if ${2:/* condition */} then}\n ${3: /* elseStatementList */}}",
     ],
     "description": "Used within an if control structure to evaluate an alternate conditional expression and contain a or statement list to be executed if its conditional expression is true.",
   },
@@ -363,8 +363,8 @@
     "prefix": "repeat:forever",
     "body": [
       "repeat forever",
-      "   // ${1:statementList}",
-      "   if ${2:condition} then",
+      "   // ${1: /* statementList */}",
+      "   if ${2: /* condition */} then",
       "      exit repeat",
       "   end if",
       "end repeat",
@@ -375,8 +375,8 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "repeat:while",
     "body": [
-      "repeat while ${1:condition}",
-      "   ${2:// statementList}",
+      "repeat while ${1:/* condition */}",
+      "   ${2:/* statementList */}",
       "end repeat",
     ],
     "description": "Executes a set of statements repeatedly.",
@@ -385,8 +385,8 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "repeat:until",
     "body": [
-      "repeat until ${1:condition}",
-      "   ${2:// statementList}",
+      "repeat until ${1:/* condition */}",
+      "   ${2:/* statementList */}",
       "end repeat",
     ],
     "description": "Executes a set of statements repeatedly.",
@@ -396,7 +396,7 @@
     "prefix": "repeat:number",
     "body": [
       "repeat for ${1:number} ${2:times}",
-      "   ${3:// statementList}",
+      "   ${3:/* statementList */}",
       "end repeat",
     ],
     "description": "Executes a set of statements repeatedly.",
@@ -406,7 +406,7 @@
     "prefix": "repeat:with",
     "body": [
       "repeat with ${1:counterVariable} = ${2:startValue} ${3|to,down to|} ${4:endValue} ${5:step ${6:increment}}",
-      "   ${7:// statementList}",
+      "   ${7:/* statementList */}",
       "end repeat",
     ],
     "description": "Executes a set of statements repeatedly.",
@@ -416,7 +416,7 @@
     "prefix": "repeat:for.each.in.container",
     "body": [
       "repeat for each ${1|byte,codeunit,codepoint,char,token,trueword,word,item,sentence,paragraph,line|} ${2:labelVariable} in ${3:container}",
-      "   ${4:// statementList}",
+      "   ${4:/* statementList */}",
       "end repeat",
     ],
     "description": "Executes a set of statements repeatedly.",
@@ -426,7 +426,7 @@
     "prefix": "repeat:for.each.in.array",
     "body": [
       "repeat for each ${1|element,key|} ${2:labelVariable} in ${3:array}",
-      "   ${4:// statementList}",
+      "   ${4:/* statementList */}",
       "end repeat",
     ],
     "description": "Executes a set of statements repeatedly.",
@@ -443,10 +443,10 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "set:custom.property",
     "body": [
-      "setProp ${1:propertyName}",
-      "   ${2:// statementList}",
-      "   pass ${1:propertyName}",
-      "end ${1:propertyName}"
+      "setProp ${1:cPropertyName}",
+      "   ${2:/* statementList */}",
+      "   pass ${1:cPropertyName}",
+      "end ${1:cPropertyName}"
     ],
     "description": "Handles the trigger sent to an object when you change one of its custom properties.",
   },
@@ -454,11 +454,11 @@
     "scope": "livecodescript,lc,lcs",
     "prefix": "switch:expression",
     "body": [
-      "switch ${1: //switchExpression}",
+      "switch ${1: /* switchExpression */}",
       "   case ${2:caseValue}",
-      "      ${3:// statementList}",
+      "      ${3:/* statementList */}",
       "      break",
-      "   ${4:default\n     ${5:// defaultStatementList}}",
+      "   ${4:default\n     ${5:/* defaultStatementList */}}",
       "end switch",
     ],
     "description": "Chooses among several possible values for an expression, and executes a set of statements that depends on the value.",
@@ -468,10 +468,10 @@
     "prefix": "switch:case.condition",
     "body": [
       "switch",
-      "   case ${1:caseCondition}",
-      "      ${2:// statementList}",
+      "   case ${1: /* caseCondition */}",
+      "      ${2:/* statementList */}",
       "      break",
-      "   ${3:default\n     ${4:// defaultStatementList}}",
+      "   ${3:default\n     ${4:/* defaultStatementList */}}",
       "end switch",
     ],
     "description": "Chooses among several possible values for an expression, and executes a set of statements that depends on the value.",
@@ -489,7 +489,7 @@
     "prefix": "try",
     "body": [
       "try",
-      "   ${1:// statementList}",
+      "   ${1:/* statementList */}",
       "${2:catch ${3:errorVariable}\n     ${4:// errorStatementsList}\n${5:finally\n     ${6:// serrorStatementsList}}}",
       "end try",
     ],
