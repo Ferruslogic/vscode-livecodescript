@@ -310,7 +310,7 @@
     "body": [
       "if ${1:condition } then",
       "   ${2:statementList}",
-      "${3:else\n   ${4:elseStatementList}}",
+      "${3:else\n   ${4:// elseStatementList}}",
       "end if"
     ],
     "description": "Evaluates a conditional expression to determine if it is true and if so executes a subsequent statement or statement list. If the condition is false and the if control structure contains an else keyword the statement or statement list following the else is executed. The if control structure may contain one or more else if keywords which have a conditional expression. If the conditional expression for one of these evaluates to be true then the statement or statement list following that else if is executed. If the if control structure contains more than one line then the if control structure must end with an end if keyword.",
@@ -321,10 +321,26 @@
     "body": [
       "if ${1:condition} then",
       "   ${2:statementList}",
-      "${3:else ${4:if ${5:condition} then}\n   ${6:elseStatementList}}",
+      "${3:else ${4:if ${5:condition} then}\n   ${6: // elseStatementList}}",
       "end if"
     ],
     "description": "Evaluates a conditional expression to determine if it is true and if so executes a subsequent statement or statement list. If the condition is false and the if control structure contains an else keyword the statement or statement list following the else is executed. The if control structure may contain one or more else if keywords which have a conditional expression. If the conditional expression for one of these evaluates to be true then the statement or statement list following that else if is executed. If the if control structure contains more than one line then the if control structure must end with an end if keyword.",
+  },
+  "Use the else keyword to perform an alternative action within an if control structure.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "else",
+    "body": [
+      "${1:else}\n   ${2:// elseStatementList}",
+    ],
+    "description": "Used within an if control structure to contain statements to be performed if the condition is not true.",
+  },
+  "Used within an if control structure to evaluate an alternate conditional expression and contain a or statement list to be executed if its conditional expression is true.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "else:if",
+    "body": [
+      "else ${1:if ${2:condition} then}\n ${3: // elseStatementList}}",
+    ],
+    "description": "Used within an if control structure to evaluate an alternate conditional expression and contain a or statement list to be executed if its conditional expression is true.",
   },
   "Skips the rest of the current iteration.": {
     "scope": "livecodescript,lc,lcs",
@@ -665,5 +681,48 @@
       "end extensionFinalize",
     ],
     "description": "Extension Finalize",
+  },// MARK:VARIABLES AND CONSTANT
+  "A global variable": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": ["var:global", "global"],
+    "body": [
+      "global g${1:Foobar}",
+    ],
+    "description": "A global variable",
   },
+  "A local variable.": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "local",
+    "body": [
+      "local ${1|s,t|}${2:Foobar}",
+    ],
+    "description": "A local variable",
+  },
+  "A variable visible to the script that it is in": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": [
+      "var:local2script",
+      "var"
+    ],
+    "body": [
+      "local s${1:Foobar}",
+    ],
+    "description": "A variable visible to the script that it is in",
+  },
+  "A variable visible to the handler it is in": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "var:local2handler",
+    "body": [
+      "local t${1:Foobar}",
+    ],
+    "description": "A variable visible to the handler it is in",
+  },
+  "A constant that is visible where it is defined (handler or script)": {
+    "scope": "livecodescript,lc,lcs",
+    "prefix": "constant",
+    "body": [
+      "constant k${1:SuperUserPassword} = ${2:\"password123\"}",
+    ],
+    "description": "A constant that is visible where it is defined (handler or script)",
+  }
 }
