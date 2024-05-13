@@ -310,7 +310,6 @@
     "body": [
       "if ${1:/* condition */ } then",
       "   ${2:/* statementList */}",
-      "${3:else\n   ${4:/* elseStatementList */}}",
       "end if"
     ],
     "description": "Evaluates a conditional expression to determine if it is true and if so executes a subsequent statement or statement list. If the condition is false and the if control structure contains an else keyword the statement or statement list following the else is executed. The if control structure may contain one or more else if keywords which have a conditional expression. If the conditional expression for one of these evaluates to be true then the statement or statement list following that else if is executed. If the if control structure contains more than one line then the if control structure must end with an end if keyword.",
