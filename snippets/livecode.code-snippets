@@ -566,7 +566,7 @@
       "   if the target is not me then",
       "      pass \"extensionFinalize\"",
       "   end if",
-      "   remove the script of me from front",
+      "   remove the script of me from back",
       "end extensionFinalize",
       "\n\n",
       "/**",
